@@ -49,11 +49,11 @@ function s = pattern(M,varargin)
     	s = recPattern(M,d-1,s,optionals.Target);
     end
     % TODO Grenzen im Rek vernünftig setzen - so funktionierts erstmal
-    if (strcmp(optionals.Target,'unit'))
-        s = mod(s,1);
-    else % symmetric (default)
-        s = mod(s+0.5,1)-0.5;
-    end
+%    if (strcmp(optionals.Target,'unit'))
+%        s = mod(s,1);
+%    else % symmetric (default)
+%        s = mod(s+0.5,1)-0.5;
+%    end
 end
 
 function s=recPattern(M,dim,s_pre,target)
@@ -66,12 +66,12 @@ function s=recPattern(M,dim,s_pre,target)
     tsums = M(dim,dim+1:d)*s_pre;
     s = zeros(l,size(s_pre,2)/step);
     if (strcmp(target,'unit'))
-        sl = 0:step:(1-step);
+         sl = 0:step:(1-step);
     else % symmetric (default)
-        sl = -0.5:step:(0.5-step);
+          sl = -0.5:step:(0.5-step);
     end
     for i=1:size(s_pre,2)
-        s(1,(abs(M(dim,dim))*(i-1)+1):(abs(M(dim,dim))*i)) = sl - step*(tsums(i));
+        s(1,(abs(M(dim,dim))*(i-1)+1):(abs(M(dim,dim))*i)) = sl + step*(ceil(tsums(i))-tsums(i));
         s(2:l,(abs(M(dim,dim))*(i-1)+1):(abs(M(dim,dim))*(i))) = repmat(s_pre(:,i),1,M(dim,dim));
     end
     if (dim>1)
