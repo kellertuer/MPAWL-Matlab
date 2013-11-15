@@ -1,5 +1,5 @@
-function pMf = patternNormalForm(M)
-% patternNormalform compute the pattern normal form of M
+function pMf = patternNormalform(M,varargin)
+% patternNormalform(M) computes the pattern normal form of M
 %
 %   The pattern normal form of the matrix, i.e. a matrix obtained by
 %   computing the gaussian elimination (in integers) to obtain an upper
@@ -10,10 +10,19 @@ function pMf = patternNormalForm(M)
 %       M: a regular integral dxd dimensional matrix
 %
 %   OUTPUT
-%       The matrix in pattern normal form
-%--------------------------------------------------------------------------
-% MPAWL 1.0 written on 2013-09-11 by Ronny Bergmann
-isMatrixValid(M);
+%       pMf: The matrix in pattern normal form
+% ---
+% MPAWL 1.0 written by Ronny Bergmann
+% created 2013-09-17; last update: 2013-11-15
+    p = inputParser;
+    addParamValue(p, 'Validate',true,@(x) islogical(x));
+    addParamValue(p, 'Debug','None');
+    parse(p, varargin{:});
+    optionals = p.Results;
+
+    if (optionals.Validate)
+        isMatrixValid(M);
+    end
     pMf = M;
     d = size(M,1);
     % form upper triangular matrix
@@ -51,39 +60,35 @@ rM = M; % computation matrix
 % Just transcribed from Mathematica...
 % TODO: Can that be optimized in MatLab? 
 %
-ri
-ci
 if rM(ri, ci) ~= 0
     % Modify by row addition, such that ci,ci is nonnegative
     if rM(ci,ci) < 0
-        rM(ci,:) = rM(ci,:) - fix(rM(ci,ci)/rM(ri,ci))*rM(ri,:)
+        rM(ci,:) = rM(ci,:) - fix(rM(ci,ci)/rM(ri,ci))*rM(ri,:);
     end
     % get it positive
     if rM(ci,ci) == 0
-        rM(ci,:) = rM(ci,:) + sign(rM(ri,ci))*rM(ri,:)
+        rM(ci,:) = rM(ci,:) + sign(rM(ri,ci))*rM(ri,:);
     end
     % get the second entry in that column also positive
     if rM(ri,ci) < 0
-        f = ceil(rM(ri,ci)/rM(ci,ci))
+        f = ceil(rM(ri,ci)/rM(ci,ci));
         if f==0
             f=f+1;
         end
-        rM(ri,:) = rM(ri,:) - f*rM(ci,:)
+        rM(ri,:) = rM(ri,:) - f*rM(ci,:);
     end
-    % Euclidean algorithm
-    rM
+    % Euclidean algorithm on rows in order to get (ri,ci) to zero
     while rM(ri,ci) ~= 0
         if abs(rM(ci,ci)) > abs(rM(ri,ci))
             f = floor(rM(ci,ci)/rM(ri,ci));
             if mod(rM(ci,ci),rM(ri,ci))==0
-                f = f-sign(rM(ri,ci))*sign(rM(ci,ci))
+                f = f-sign(rM(ri,ci))*sign(rM(ci,ci));
             end
-            rM(ci,:) = rM(ci,:)-f*rM(ri,:)
+            rM(ci,:) = rM(ci,:)-f*rM(ri,:);
         else
-            f = floor(rM(ri,ci)/rM(ci,ci))
-            rM(ri,:) = rM(ri,:) - f*rM(ci,:)
+            f = floor(rM(ri,ci)/rM(ci,ci));
+            rM(ri,:) = rM(ri,:) - f*rM(ci,:);
         end
     end
 end
 end
-
