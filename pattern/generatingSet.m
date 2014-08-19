@@ -16,7 +16,7 @@ function s = generatingSet(M,varargin)
 %            whether to validate input or not (for performance reasons)   
 %
 % ---
-% MPAWL 1.0, Ronny Bergmann ~ 2013-11-15 ~ last edit: 2014-07-30
+% MPAWL 1.0, R. Bergmann ~ 2013-11-15 ~ last edit: 2014-08-19
 
 s = M*pattern(patternNormalForm(M),varargin{:});
 

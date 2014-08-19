@@ -11,9 +11,9 @@ function pMf = patternNormalForm(M,varargin)
 %
 %   OUTPUT
 %       pMf: The matrix in pattern normal form
+%
 % ---
-% MPAWL 1.0 written by Ronny Bergmann
-% created 2013-09-17; last update: 2013-11-15
+% MPAWL 1.0, R. Bergmann ~ 2013-09-17 ~ last update: 2013-11-15
     p = inputParser;
     addParamValue(p, 'Validate',true,@(x) islogical(x));
     parse(p, varargin{:});
@@ -51,14 +51,13 @@ end
 % local functions
 function rM = gcdonrows(M,ci,ri)
 % gcdonRows(M,rowindex,colindex) perform a GCD on complete rows
-%
-%--------------------------------------------------------------------------
+% ---
 % MPAWL 1.0 written on 2013-09-11 by Ronny Bergmann
-rM = M; % computation matrix
-%
+
 % Just transcribed from Mathematica...
-% TODO: Can that be optimized in MatLab? 
-%
+% TODO: Can that be optimized in MatLab by using Matrix-Vector notation?
+
+rM = M; % computation matrix
 if rM(ri, ci) ~= 0
     % Modify by row addition, such that ci,ci is nonnegative
     if rM(ci,ci) < 0

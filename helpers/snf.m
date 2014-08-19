@@ -14,8 +14,7 @@
 %   V : An n times n transformation matrix 
 %
 % If only one or no return value is specified, the matrix S is returned.
-%
-% ---
+% 
 % MPAWL 1.0, D. Merkert ~ 2014-07-31 ~ last edit: 2014-08-19 (R. Bergmann)
 
 % TODO: The code could be improved by (1) adding more comments and (2)
