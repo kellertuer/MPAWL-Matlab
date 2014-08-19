@@ -1,4 +1,4 @@
-function pMf = patternNormalform(M,varargin)
+function pMf = patternNormalForm(M,varargin)
 % patternNormalform(M) computes the pattern normal form of M
 %
 %   The pattern normal form of the matrix, i.e. a matrix obtained by
@@ -16,7 +16,6 @@ function pMf = patternNormalform(M,varargin)
 % created 2013-09-17; last update: 2013-11-15
     p = inputParser;
     addParamValue(p, 'Validate',true,@(x) islogical(x));
-    addParamValue(p, 'Debug','None');
     parse(p, varargin{:});
     optionals = p.Results;
 

@@ -34,7 +34,7 @@ function s = pattern(M,varargin)
     if (optionals.Validate)
         isMatrixValid(M);
         if ~all(all(M == patternNormalForm(M)))
-            error('The input matrix M is not in pattern normal form');
+            error('The matrix M is not provided in pattern normal form');
         end
     end
         
