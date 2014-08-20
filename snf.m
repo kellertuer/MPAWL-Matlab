@@ -65,6 +65,10 @@ while (index < m && index < n)
     [U,S,V] = reduceToZero(S,index,index,index,U,V);
     index = index+1;
 end % end while indices
+% Now the last entry might still be negative
+if (S(index,index) < 0)
+    [U,S,V] = multRow(S,index,-1,U,V);
+end
 % Debug check
 % verifySmithNormalForm(U,S,V,A);
 if nargout < 2 % return just S into the one variable or to ans.
