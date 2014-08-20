@@ -1,4 +1,4 @@
-function h = modM(k,M,target)
+function h = modM(k,M,varargin)
 %modM(k,M) Compute k mod M, there the target specifies the set of 
 %      congruence class representants
 %
@@ -13,15 +13,20 @@ function h = modM(k,M,target)
 %--------------------------------------------------------------------------
 % MPAWL 1.0, written on 2013-09-11 by Ronny Bergmann
 
-if nargin<3
-    target='unit';
+p = inputParser;
+addParamValue(p, 'Validate',true,@(x) islogical(x));
+addParamValue(p, 'Target','unit');
+parse(p, varargin{:});
+ppV = p.Results.Validate;
+target = p.Results.Target;
+if (ppV)
+    isMatrixValid(M);
 end
 if strcmp(target,'unit')
-    h = M*mod(inv(M)*k,1);
+    h = M*mod(M\k,1);
 elseif strcmp(target,'symmetric')
-    h = M*(mod(inv(M)*k+0.5,1)-0.5);
+    h = M*(mod(M\k+0.5,1)-0.5);
 else
     error('Congruence class type (target=''%s'') is unknown.',target);
 end
 end
-
