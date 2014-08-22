@@ -9,4 +9,4 @@ M1 = [16,4;0,16]
 patternDimension(M1) % 2
 diag(snf(M1)) % 4,64
 patternBasis(M1) % [0, 1/64; 1/4, -1/16]
-generatingSetBasis(transpose(M1)) %[4,1;1,16] (from Mathematica) [1,4;0,1] here?
+generatingSetBasis(transpose(M1)) %[4,1;1,16]
