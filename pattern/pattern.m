@@ -32,32 +32,29 @@ end
 
 d = size(M,1);
 step = 1/abs(M(d,d));
-if (strcmp(pp.Target,'unit'))
-    s = 0:step:(1-step);
-else % symmetric (default)
-    s = -0.5:step:(0.5-step);
-end
+min = ceil( - (1/step)/2);
+max = ceil( (1/step)/2 )-1;
+s = (min:max)*step;
 if (d>1)
-    s = recPattern(M,d-1,s,pp.Target);
+    s = recPattern(M,d-1,s);
+end
+if (strcmp(pp.Target,'unit')) %lazy, sry
+    s = mod(s,1);
 end
 end
-
-function s=recPattern(M,dim,s_pre,target)
+function s=recPattern(M,dim,s_pre)
 % recursively generate patterns in each dimension starting from the last
 %
 d = size(M,1);
 l = d-dim+1;
 step = 1/abs(M(dim,dim));
-% shifts by elements of the upper right of the matrix
-tsums = M(dim,dim+1:d)*s_pre;
 s = zeros(l,size(s_pre,2)/step);
-if (strcmp(target,'unit'))
-    sl = 0:step:(1-step);
-else % symmetric (default)
-    sl = -0.5:step:(0.5-step);
-end
+% shifts by elements of the upper right of the matrix
 for i=1:size(s_pre,2)
-    s(1,(abs(M(dim,dim))*(i-1)+1):(abs(M(dim,dim))*i)) = sl + step*(ceil(tsums(i))-tsums(i));
+    tsum = M(dim,dim+1:d)*s_pre(:,i);
+    min = ceil( - (1/(2*step)) + tsum);
+    max = ceil( (1/(2*step)+tsum) ) - 1;
+    s(1,(1/step*(i-1)+1):(1/step*i)) = ((min:max) - tsum)*step;
     s(2:l,(abs(M(dim,dim))*(i-1)+1):(abs(M(dim,dim))*(i))) = repmat(s_pre(:,i),1,M(dim,dim));
 end
 if (dim>1)
