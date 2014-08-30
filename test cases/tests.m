@@ -6,7 +6,8 @@
 
 % Test Smith Normal Form
 test_snf;
-% Pattern and stuff
+test_nestedFor;
 test_patternBasis;
-% Test generatingSet stuff
 text_genSets;
+test_patternFFT
+
