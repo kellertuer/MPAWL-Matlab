@@ -1,1 +1,10 @@
 *.m~
+temp docs/Basics.pdf
+temp docs/BoxSplines.pdf
+temp docs/Pattern.pdf
+temp docs/Sampling.pdf
+temp docs/TISpace.pdf
+temp docs/Transforms.pdf
+temp docs/Visualization.pdf
+temp docs/deLaValleePoussin.pdf
+temp docs/genSet.pdf
