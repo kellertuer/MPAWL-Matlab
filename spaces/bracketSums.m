@@ -7,7 +7,7 @@ function hatb = bracketSums(data,origin,M,varargin)
 % INPUT
 %   data   : an array of values, which is d-dimensional
 %   origin : entry in data that is adressing the index 0 in data
-%   M      : matrix 
+%   M      : an integer valued matrix indicating the pattern
 %
 % OUTPUT
 %   hatb   : array of bracket sums adressed with respect to the basis of
@@ -32,7 +32,7 @@ end
 d = size(M,1);
 if (pp.Validate)
     assert(isvector(origin),'origin is not a vector.');
-    assert(length(vector)==d,'vector is of invalid size (%d), %d required',length(origin),d))
+    assert(length(origin)==d,'vector is of invalid size (%d), %d required',length(origin),d);
     assert(all(origin>0),'origin has to be a positive vector');
     assert(all(origin<size(data)),'origin has to be in range of data');
 end
@@ -41,37 +41,34 @@ d = size(M,1);
 dM = patternDimension(M);
 epsilon = diag(snf(M));
 epsilon = epsilon(d-dM+1:d);
-hM = generatingSetBasis(transpose(M))
+hM = generatingSetBasis(transpose(M));
 %Compute maximal values
-tmax = zeros(1,d);
-tmaxsum = NestedFor(zeros(d,1),ones(d,1));
-while tmaxsum.hasNext())
-    omega = abs(transpose(M)*(tmaxsum.next - 0.5*ones(d,1)));
-    tmax = max(tmax,omega);
-end
+tmax = getMaxIndex(transpose(M));
 torigin = tmax+1;
 sums = zeros(2*tmax+1);
 %run over all indices of data
-summation = nestedFor(ones(1,size(size(data))),size(data));
-while (summation.hasNext())
-    epsilon = summation.next();
-    epsMod = modM(epsilon-origin,transpose(M),'target','symmetric')+torigin;
+summation = nestedFor(ones(1,size(size(data),2)),size(data));
+while summation.hasNext()
+    index = summation.next()
+    epsMod = num2cell(modM((index-origin)',transpose(M),'target','symmetric')'+torigin);
+    index = num2cell(index);
     if strcmp(pp.Compute,'absolute squares')
-        sums(subd2ind(epsMod,2*tmax+1)) = sums(subd2ind(epsMod)) + abs(data(epsilon))^2;    
+        sums(sub2ind(size(sums),epsMod{:})) = sums(sub2ind(size(sums),epsMod{:})) + abs(data(sub2ind(size(data),index{:})))^2;
     else % else default: brackets
-        sums(subd2ind(epsMod,2*tmax+1)) = sums(subd2ind(epsMod)) + data(epsilon);
-    end
-    % put result in right circle order
-    hatb = zeros(epsilon);
-    hM = generatingSetBasis(transpose(M));
-    summation = NestedFor(ones(1,dM),epsilon);
-    while (summation.hasNext())
-        ind = summation.next();
-        hatb(sub2ind(ind,epsilon)) = sums(sub2ind(symMod(epsilon*hM,transpose(M),'Target','symmetric')+torigin,2*tmax+1));
+        sums(sub2ind(size(sums),epsMod{:})) = sums(sub2ind(size(sums),epsMod{:})) + data(sub2ind(size(data),index{:}));
     end
 end
-
-%collect
-summation = nestedFor(zeros(size(epsilon)),epsilon);
-
+% put result in right circle order
+if (sum(size(epsilon))==2) % one cycle
+    hatb = zeros(1,epsilon);
+else
+    hatb = zeros(epsilon);
+end
+hM = generatingSetBasis(transpose(M));
+summation = nestedFor(zeros(1,dM),epsilon-ones(1,dM));
+while (summation.hasNext())
+    ind = num2cell(summation.next()+1);
+    sumInd = num2cell(modM(epsilon*hM,transpose(M),'Target','symmetric')'+torigin);
+    hatb(sub2ind(size(hatb),ind{:})) = sums(sub2ind(size(sums),sumInd{:}));
+end
 end
