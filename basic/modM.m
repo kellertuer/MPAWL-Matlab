@@ -29,4 +29,5 @@ elseif strcmp(target,'symmetric')
 else
     error('Congruence class type (target=''%s'') is unknown.',target);
 end
+h = round(h); %just ensure integers?
 end

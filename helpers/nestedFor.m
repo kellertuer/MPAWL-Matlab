@@ -35,24 +35,28 @@ classdef nestedFor < handle %inherit from handle a nicer way to work with obj
             assert(all(startV_ <= endV_), 'It should hold start(i) <= end(i) for all i');
             obj.startV = startV_;
             obj.endV = endV_;
-            obj.actPos = startV_;
+            obj.actPos = NaN;
         end
         function it = next(obj)
-            if ~obj.hasNext()
-                error('No next iterate existing.');
-            end
-            %search for smallest entry less then end to increment
-            nextstep = find(obj.actPos<obj.endV,1);
-            obj.actPos(nextstep) = obj.actPos(nextstep)+1;
-            % reset all previous ones that reached end
-            obj.actPos(1:(nextstep-1)) = obj.startV(1:(nextstep-1)); 
-            if any( (obj.actPos>obj.endV)|(obj.actPos<obj.startV))
-                error('Error during iteration, actPos invalid. Did you miss to check hasNext?');
+            if isnan(obj.actPos)
+                obj.actPos = obj.startV;
+            else
+                if ~obj.hasNext()
+                    error('No next iterate existing.');
+                end
+                %search for smallest entry less then end to increment
+                nextstep = find(obj.actPos<obj.endV,1);
+                obj.actPos(nextstep) = obj.actPos(nextstep)+1;
+                % reset all previous ones that reached end
+                obj.actPos(1:(nextstep-1)) = obj.startV(1:(nextstep-1)); 
+                if any( (obj.actPos>obj.endV)|(obj.actPos<obj.startV))
+                    error('Error during iteration, actPos invalid. Did you miss to check hasNext?');
+                end
             end
             it = obj.actPos;
         end
         function res = hasNext(obj)
-            res = any(obj.actPos < obj.endV);
+            res = any(obj.actPos < obj.endV) | isnan(obj.actPos);
         end
     end
 end
