@@ -26,9 +26,7 @@ function hata = coeffsFourier2Space(ckf,ckphi,origin,M, varargin)
 %      The corresponding Mathematica function is called
 %      'getFourierfromSpace' and was renamed to fit Matlab conventions
 % ---
-% MPAWL 1.0, R. Bergmann
-
-% TODO: Handle different sizes of phi and f in ck
+% MPAWL 1.0, R. Bergmann, 2014-09-10
 
 p = inputParser;
 addParamValue(p, 'Validate',true,@(x) islogical(x));
@@ -53,7 +51,7 @@ while sumObj,hasNext()
     Ind = sumObj.next();
     Indc = num2cell(Ind);
     %INdex in checks array
-    checkIndc = num2cell(modM(checkInd-origin,transpose(M),'Target','symmetric','Validate',false)+torigin);
+    checkIndc = num2cell(modM(Ind-origin,transpose(M),'Target','symmetric','Validate',false)+torigin);
     if ckphi(Indc{:}) == 0
         if all(Indc<=size(ckf)) && (ckf(Indc{:}) ~= 0) %lazy inRagne & nonzero
             checks(checkIndc{:}) = NaN; %error
@@ -87,4 +85,3 @@ while (summation.hasNext())
     hata(ind{:}) = checks(sumInd{:});
 end
 end
-
