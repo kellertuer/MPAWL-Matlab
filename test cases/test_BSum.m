@@ -8,7 +8,7 @@ origin = IndMax + 1;
 
 ckDM = zeros((2*IndMax+1));
 summ = nestedFor(-IndMax,IndMax);
-while summ.hasNext()
+while summ.hasNext() % Loop for the Dirichlet-Case
     v = summ.next();
     t = max(abs(transpose(inv(M))*v'));
     tInd = num2cell(v+origin);

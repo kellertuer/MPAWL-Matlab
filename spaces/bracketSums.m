@@ -41,7 +41,6 @@ d = size(M,1);
 dM = patternDimension(M);
 epsilon = diag(snf(M));
 epsilon = epsilon(d-dM+1:d);
-hM = generatingSetBasis(transpose(M));
 %Compute maximal values
 tmax = getMaxIndex(transpose(M));
 torigin = tmax+1;
@@ -49,13 +48,13 @@ sums = zeros(2*tmax+1);
 %run over all indices of data
 summation = nestedFor(ones(1,size(size(data),2)),size(data));
 while summation.hasNext()
-    index = summation.next()
+    index = summation.next();
     epsMod = num2cell(modM((index-origin)',transpose(M),'target','symmetric')'+torigin);
     index = num2cell(index);
     if strcmp(pp.Compute,'absolute squares')
-        sums(sub2ind(size(sums),epsMod{:})) = sums(sub2ind(size(sums),epsMod{:})) + abs(data(sub2ind(size(data),index{:})))^2;
+        sums(epsMod{:}) = sums(epsMod{:}) + abs(data(index{:}))^2;
     else % else default: brackets
-        sums(sub2ind(size(sums),epsMod{:})) = sums(sub2ind(size(sums),epsMod{:})) + data(sub2ind(size(data),index{:}));
+        sums(epsMod{:}) = sums(epsMod{:}) + data(index{:});
     end
 end
 % put result in right circle order
@@ -69,6 +68,6 @@ summation = nestedFor(zeros(1,dM),epsilon-ones(1,dM));
 while (summation.hasNext())
     ind = num2cell(summation.next()+1);
     sumInd = num2cell(modM(epsilon*hM,transpose(M),'Target','symmetric')'+torigin);
-    hatb(sub2ind(size(hatb),ind{:})) = sums(sub2ind(size(sums),sumInd{:}));
+    hatb(ind{:}) = sums(sumInd{:});
 end
 end
