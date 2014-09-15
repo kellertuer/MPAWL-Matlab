@@ -15,6 +15,12 @@ function ckf = coeffsSpace2Fourier(hata,ckphi,origin,M,varargin)
 %    OUTPUT
 %         ckf    : Fourier coefficients of f
 %
+%    OPTIONAL ARGUMENTS
+%        'Validate' (true) : whether to validate input or not
+%
+%     NOTE 
+%      The corresponding Mathematica function is called
+%      'getFourierfromSpace' and was renamed to fit Matlab conventions
 % ---
 % MPAWL, R. Bergmann, 2014-09-10
 
@@ -38,17 +44,17 @@ coeffsOI = Inf(2*tmax+1);
 summation = nestedFor(zeros(1,dM),epsilon-ones(1,dM));
 % reorder
 while (summation.hasNext())
-    ind = num2cell(summation.next()+1);
-    sumInd = num2cell(modM(epsilon*hM,transpose(M),'Target','symmetric','Validate',false)'+torigin);
-    coeffsOI(sumInd{:}) = hata(ind{:});
+    ind = summation.next();
+    indc = num2cell(ind+1);
+    sumIndc = num2cell(modM(ind*hM,transpose(M),'Target','symmetric','Validate',false,'Index',true)'+torigin);
+    coeffsOI(sumIndc{:}) = hata(indc{:});
 end
 ckf = zeros(size(ckphi));
-summation = nestedFor(ones(1,dM),size(ckphi));
+summation = nestedFor(ones(size(size(ckphi))),size(ckphi));
 while (summation.hasNext())
     ind = summation.next();
     indc = num2cell(ind);
-    sumIndc = num2cell(modM((ind-origin)',transpose(M),'Target','symmetric','Validate',false)'+torigin);
+    sumIndc = num2cell(modM((ind-origin)',transpose(M),'Target','symmetric','Validate',false,'Index',true)'+torigin);
     ckf(indc{:}) = coeffsOI(sumIndc{:})*ckphi(indc{:});
 end
 end
-

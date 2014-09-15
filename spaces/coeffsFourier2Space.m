@@ -17,9 +17,6 @@ function hata = coeffsFourier2Space(ckf,ckphi,origin,M, varargin)
 %                  result indicates the failure by NaN at the corresponding index.
 %
 %    OPTIONAL ARGUMENTS
-%        'Target' : ('symmetric') specifies whether the unit cube ('unit')
-%                   or the nearly symmetric cube ('symmetric') is used for
-%                   the result.
 %        'Validate' (true) : whether to validate input or not
 %
 %     NOTE 
@@ -51,7 +48,7 @@ while sumObj,hasNext()
     Ind = sumObj.next();
     Indc = num2cell(Ind);
     %INdex in checks array
-    checkIndc = num2cell(modM(Ind-origin,transpose(M),'Target','symmetric','Validate',false)+torigin);
+    checkIndc = num2cell(modM(Ind-origin,transpose(M),'Target','symmetric','Validate',false,'Index',true)+torigin);
     if ckphi(Indc{:}) == 0
         if all(Indc<=size(ckf)) && (ckf(Indc{:}) ~= 0) %lazy inRagne & nonzero
             checks(checkIndc{:}) = NaN; %error
@@ -80,8 +77,9 @@ end
 hM = generatingSetBasis(transpose(M));
 summation = nestedFor(zeros(1,dM),epsilon-ones(1,dM));
 while (summation.hasNext())
-    ind = num2cell(summation.next()+1);
-    sumInd = num2cell(modM(epsilon*hM,transpose(M),'Target','symmetric')'+torigin);
-    hata(ind{:}) = checks(sumInd{:});
+    ind = summation.next();
+    indc = num2cell(ind+1);
+    sumInd = num2cell(modM(ind*hM,transpose(M),'Target','symmetric','Index',true)'+torigin);
+    hata(indc{:}) = checks(sumInd{:});
 end
 end

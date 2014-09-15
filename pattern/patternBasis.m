@@ -45,6 +45,5 @@ V = V(:,d-dM+1:d);
 for i = 1:dM
     V(:,i) = modM(V(:,i),eye(d),'Target',target,'Validate',false);
 end
-
 end
 
