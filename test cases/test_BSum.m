@@ -34,3 +34,8 @@ ckDMIP = coeffsSpace2Fourier(1./(abs(det(M))*dMBS),ckDM,origin,M)
 t = bracketSums(ckDMIP,origin,M);
 assert(all(t == ones(size(t))*1/260),...
     'for the IP they all should be 1/260 = 0.0038');
+
+dMBSq = bracketSums(ckDM,origin,M,'Compute','absolute Squares');
+ckDMon = coeffsSpace2Fourier(1./sqrt(abs(det(M))*dMBSq),ckDM,origin,M)
+
+1/(2*sqrt(65))

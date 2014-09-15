@@ -15,11 +15,11 @@ function hatb = bracketSums(data,origin,M,varargin)
 %
 % OPTIONAL PARAMETERS
 %   'Validate' : (true) Whether to check the validtidy of input M and origin
-%   'Compute'  : ('bracket') compute different sums, other values:
-%                 'absolute suqares'
+%   'Compute'  : ('Bracket') compute different sums, other values:
+%                 'absolute Suqares'
 %
 % ---
-% MPAWL 1.0, R. Bergmann ~ 2014-09-30
+% MPAWL 1.0, R. Bergmann ~ 2014-08-30 ~ 2014-09-15
 
 p = inputParser;
 addParamValue(p, 'Validate',true,@(x) islogical(x));
@@ -51,7 +51,7 @@ while summation.hasNext()
     index = summation.next();
     epsMod = num2cell(modM((index-origin)',transpose(M),'Target','symmetric','Index',true)'+torigin);
     index = num2cell(index);
-    if strcmp(pp.Compute,'absolute squares')
+    if strcmp(pp.Compute,'absolute Squares')
         sums(epsMod{:}) = sums(epsMod{:}) + abs(data(index{:}))^2;
     else % else default: brackets
         sums(epsMod{:}) = sums(epsMod{:}) + data(index{:});
