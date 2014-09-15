@@ -37,7 +37,7 @@ if strcmp(target,'unit')
 elseif strcmp(target,'symmetric')
     h = M*(mod(M\k+0.5,1)-0.5);
 else
-    error('Congruence class type (target=''%s'') is unknown.',target);
+    error('Congruence class type (Target=''%s'') is unknown.',target);
 end
 if index
     h = round(h); %just ensure integers for adressing in array

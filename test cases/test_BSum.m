@@ -1,9 +1,9 @@
 % Transcribed from Example 3 of the Mathematica implementation
 %%
 M = [32,4; -1,8];
-abs(det(M))
-IndMax = getMaxIndex(transpose(M))
-
+assert(abs(det(M))==260,'The determinant is not correct, did you change the matrix?')
+patternBasis(M);
+IndMax = getMaxIndex(transpose(M));
 origin = IndMax + 1;
 
 ckDM = zeros((2*IndMax+1));
@@ -26,4 +26,11 @@ ckDM
 
 dMBS = bracketSums(ckDM,origin,M);
 
-dMBS
+dMBS;
+assert(dMBS(131)==2,'This value should be 2');
+
+ckDMIP = coeffsSpace2Fourier(1./(abs(det(M))*dMBS),ckDM,origin,M)
+
+t = bracketSums(ckDMIP,origin,M);
+assert(all(t == ones(size(t))*1/260),...
+    'for the IP they all should be 1/260 = 0.0038');

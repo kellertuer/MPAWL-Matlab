@@ -45,7 +45,7 @@ dM = patternDimension(M);
 V = transpose(inv(V));
 V = V(:,d-dM+1:d);
 for i = 1:dM
-    V(:,i) = modM(V(:,i),M,'Target',target,'Validate',false);
+    V(:,i) = modM(V(:,i),M,'Target',target,'Validate',false,'Index',true);
 end
 end
 
