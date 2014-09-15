@@ -10,15 +10,25 @@ function h = modM(k,M,varargin)
 %
 %   OUTPUT
 %       h: the vector congruence class representant congruent to k
+%
+% OPTIONAL PARAMETERS
+%   'Validate' : (true) whether or not to validate the input
+%   'Target'   : ('unit') whether to produce a basis for the 'unit' cube or
+%               the nearly 'symmetric' block. 
+%   'Index'    : (false) whether or not the result is used as an index an
+%                hence required to be integer. For generatingSetElements,
+%                there might be rounding errors.
 %--------------------------------------------------------------------------
 % MPAWL 1.0, written on 2013-09-11 by Ronny Bergmann
 
 p = inputParser;
 addParamValue(p, 'Validate',true,@(x) islogical(x));
 addParamValue(p, 'Target','unit');
+addParamValue(p, 'Index',false);
 parse(p, varargin{:});
 ppV = p.Results.Validate;
 target = p.Results.Target;
+index = p.Results.Index;
 if (ppV)
     isMatrixValid(M);
 end
@@ -29,5 +39,7 @@ elseif strcmp(target,'symmetric')
 else
     error('Congruence class type (target=''%s'') is unknown.',target);
 end
-h = round(h); %just ensure integers?
+if index
+    h = round(h); %just ensure integers for adressing in array
+end
 end
