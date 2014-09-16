@@ -37,7 +37,7 @@ end
 d = size(M,1);
 N = round(inv(J)*M); %round for security reasons?
 assert(det(M) == det(N)*det(J),'N = inv(J)M hast to be integer valued');
-assert(patternDimension(J)==1,['The pattern dimension of J has to be 1 not',num2str(patternDimension(J),'.']);
+assert(patternDimension(J)==1,['The pattern dimension of J has to be 1 not',num2str(patternDimension(J)),'.']);
 dM = patternDimension(M);
 dN = patternDimension(N);
 debug(text,2,'Orthonormalizing Coefficients...');
@@ -52,12 +52,19 @@ for i=1:dN
     P(:,i) = generatingSetBasisDecomp(hN(:,i),transpose(M),'Target','symmetric','Validate',false);
 end
 hatb = inf(epsilon);
-linindep = true;
 summation = NestedFor(zeros(1,dN),mu-1);
 % Timer Debug.
-
+debug('time',3,'StartTimer','orthogonalizeInTranslatestiming');
 while summation.hasNext()
     ind = summation.next();
+    indM = modM(P*(ind'),diag(epsilon));
+    indM2 = modM(P*(ind')+lambdag,diag(epsilon));
+    indMc = num2cell(indM);
+    indM2c = num2cell(indM2);
+    actBSq = abs(hata(indMc))^2 + abs(hata(indM2c))^2;
+    assert(actBSq ~= 0,'The translates of phi are not linearly independent w.r.t pattern(N)');
+    hatb(indMc) = hata(indMc)*sqrt(abs(det(J))/actBSq);
+    hatb(indM2c) = hata(indM2c)*sqrt(abs(det(J))/actBSq);
     % TODO: Computations
 end
-assert(linindep,' the translates T(x)phi, x from pattern(N), (given by hata) are not linearly independent.');
+debug('time',3,'StopTimer','orthogonalizeInTranslatestiming');

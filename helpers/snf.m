@@ -14,7 +14,8 @@
 %   V : An n times n transformation matrix 
 %
 % If only one or no return value is specified, the matrix S is returned.
-% 
+%
+% ---
 % MPAWL 1.0, D. Merkert ~ 2014-07-31 ~ last edit: 2014-08-19 (R. Bergmann)
 
 % TODO: The code could be improved by (1) adding more comments and (2)
@@ -64,6 +65,10 @@ while (index < m && index < n)
     [U,S,V] = reduceToZero(S,index,index,index,U,V);
     index = index+1;
 end % end while indices
+% Now the last entry might still be negative
+if (S(index,index) < 0)
+    [U,S,V] = multRow(S,index,-1,U,V);
+end
 % Debug check
 % verifySmithNormalForm(U,S,V,A);
 if nargout < 2 % return just S into the one variable or to ans.
