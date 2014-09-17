@@ -1,6 +1,6 @@
-function hatb = patternFFT(M,b,varargin)
+function hatb = patternIFFT(M,b,varargin)
 % patternFFt
-% Compute the Fourier transform with respect to the pattern P(M), where
+% Compute the inverse Fourier transform with respect to the pattern P(M), where
 % b is the data given as a matrix that is running through the basis vectors
 % w.r.t patternBasis(M) or the same corresponding reshaped vector b.
 %
@@ -39,7 +39,7 @@ function hatb = patternFFT(M,b,varargin)
    end
    debug('text',3,'Text',['Starting the ',num2str(dM),'-dim. Fourier Transform for b (size: ',num2str(size(b)),').']);
    debug('time',3,'StartTimer','pfft');
-   inthatb = 1/sqrt(det(M))*fftn(intb); %dM-dimensional Fourier transform
+   inthatb = 1/sqrt(det(M))*ifftn(intb); %dM-dimensional Fourier transform
    debug('time',3,'StopTimer','pfft');
    if isvector(b)
        hatb = inthatb(:);

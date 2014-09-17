@@ -51,7 +51,7 @@ m = abs(det(M));
 epsilon = diag(snf(M)); epsilon = epsilon(d-dM+1:d);
 pMBasis = patternBasis(M,'Validate',false);
 if ~isa(f, 'function_handle') % no function handle
-    assert(all(size(f)==[m,m],['The data array has to be of size 'num2str(m),'x',num2str(m),'.']);
+    assert(all(size(f))==[m,m],['The data array has to be of size ',num2str(m),'x',num2str(m),'.']);
 end
 pointSet = 0;
 if (strcmp(pp.SamplingMethod,'pointwise'));
@@ -67,12 +67,12 @@ while summation.hasNext()
     pt = 2*pi*modM(pMBasis*ind,eye(d),'Target','symmetric','Validate',false);
     if ~isa(f,'function handle')
         indA = num2cell( (modM(pMBasis*ind,eye(d),'Target','symmetric','Validate',false) + 0.5)*m);
-        v(indc) = A(indA);
+        v(indc) = f(indA);
     else %function handle
         if (sum(size(pointSet))==2) % point wise sampling
             v(indc) = f(pt);
         else
-            pointSet(sub2ind(epsilon,ind),:) = pt;
+            pointSet(sub2ind(epsilon,ind),:) = pt; %#ok<AGROW>
         end
     end
 end
