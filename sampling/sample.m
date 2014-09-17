@@ -76,6 +76,7 @@ while summation.hasNext()
         end
     end
 end
+debug('time',3,'StopTimer','samplingTimer');
 if (sum(size(pointSet))~=2)
     if (strcmp(pp.SamplingMethod,'point row'))
         v = f(pointSet);
