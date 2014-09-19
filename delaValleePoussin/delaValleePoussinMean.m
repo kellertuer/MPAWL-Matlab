@@ -30,14 +30,122 @@ function [ckphi, BSums] = delaValleePoussinMean(g,M,varargin)
 % MPAWL, R. Bergmann ~ 2014-09-18
 p = inputParser;
 addParamValue(p, 'Validate',true,@(x) islogical(x));
-addParamValue(p, 'File','');
+addParamValue(p, 'File',{});
 addParamValue(p, 'Orthonormalize',true,@(x) islogical(x));
 addParamValue(p, 'Support',[]);
 parse(p, varargin{:});
-ppV = p.Results.Validate;
-if (ppV)
+pp = p.Results;
+if (pp.Validate)
     isMatrixValid(M);
 end
-
+BSStr = '';
+FileStr = '';
+ckphi = [];
+if ischar(pp.File)
+    FileStr = pp.File; %try loading
+end
+if iscellstr(pp.File) && (length(pp.File)==2)
+    BSStr = pp.File{2};
+    FileStr = pp.File{1};
+end
+if ~isempty(FileStr)
+    debug('text',3,'Text',['Loading coefficients from file',FileStr]);
+    if exist(FileStr,'file')
+        vars = load(FileStr,'M','ckphi');
+        if (all(vars.M==M))
+            ckphi = vars.ckphi;
+            if pp.Orthonormalize
+                torigin = (size(ckphi)-1)/2;
+                ckBSq = bracketSums(ckphi,torigin,M,'Validate',false,'Compute','absolute Squares');
+                ckphi = getFourierFromSpace(1/sqrt(abs(det(M))*ckBSq),ckphi,origin,M,'Validate',false);
+            end
+        end
+        debug('text',3,'Text',['The specified file ''',FileStr,''' does not contain coefficients for M, will overwrite them.']);
+    else
+        debug('text',3,'Text',['The specified file ''',FileStr,''' does not exist yet; trying to write to it']);
+    end
+end
+if ~isempty(BSStr)
+    debug('text',3,'Text',['Loading Bracket sums from file',BSStr]);
+    if exist(BSStr,'file')
+        vars = load(BSStr,'M','BSums');
+        if (all(vars.M==M))
+            BSums = vars.BSums;
+            if ~isempty(ckphi)
+                return;
+            end
+        end
+        debug('text',3,'Text',['The specified file ''',BSStr,''' does not contain Bracket sums for M, will overwrite them.']);
+    else
+        debug('text',3,'Text',['The specified file ''',BSStr,''' does not exist yet; trying to write to it']);
+        if ~isempty(ckphi)
+            torigin = (size(ckphi)-1)/2;
+            BSums = bracketSums(ckphi,torigin,M,'Validate',false);
+            try
+                save(BSStr,'M','BSums');
+            catch err
+                warning(['Could not save to file ''',pp.File,''', the following error occured: ',err.message]);
+            end
+            return
+        end
+    end
+end
+d = size(M,2);
+adM = abs(det(M));
+if isvector(g)
+    ind = 2*max(g,pp.Support);
+    tmax = getMaxIndex(M,Target','symetric','Cube',ind);
+    torigin = tmax+1;
+    debug('text',3,'Text','Computing de la Vallée Poussin scaling function');
+    ckphi = zeros(2*tmax+1);
+    summation = nestedFor(zeros(1,d),2*tmax+1);
+    while(summation.hasnext) %faster?
+        ind = summation.next();
+        indc = num2cell(ind);
+        v = 1;
+        p = M\(ind-torigin);
+        for j=1:d
+            v = v * pyramidFunction(g(j),p(j));
+        end
+        ckphi(indc{:}) = 1/adM*v;
+    end
+elseif isa(g,'function handle')
+    ind = 2*(pp.Support);
+    tmax = getMaxIndex(M,Target','symetric','Cube',ind);
+    torigin = tmax+1;
+    debug('text',3,'Text','Computing de la Vallée Poussin scaling function');
+    ckphi = zeros(2*tmax+1);
+    summation = nestedFor(zeros(1,d),2*tmax+1);
+    while(summation.hasnext) %faster?
+        ind = summation.next();
+        indc = num2cell(ind);
+        ckphi(indc{:}) = 1/adM*g(M\(ind-torigin));
+    end
+else
+    error('Unknown input type g');
+end
+if pp.Orthonormalize
+    torigin = (size(ckphi)-1)/2;
+    ckBSq = bracketSums(ckphi,torigin,M,'Validate',false,'Compute','absolute Squares');
+    ckphi = getFourierFromSpace(1/sqrt(abs(det(M))*ckBSq),ckphi,origin,M,'Validate',false);
+end
+% File savings
+if (~isempty(BSStr) || (nargout==2)
+    BSums = bracketSums(ckphi,torigin,M,'Validate',false);
+    if ~isempty(BSStr)
+        try
+            save(BSStr,'M','BSums');
+        catch err
+            warning(['Could not save to file ''',BSStr,''', the following error occured: ',err.message]);
+        end
+    end
+end
+if ~isempty(FileStr)
+    try
+        save(FileStr,'M','ckphi');
+    catch err
+        warning(['Could not save to file ''',FileStr,''', the following error occured: ',err.message]);
+    end
+end
 end
 

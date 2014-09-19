@@ -15,25 +15,27 @@ function maxInd = getMaxIndex(M,varargin)
 %                   or the nearly symmetric cube ('symmetric') is used for
 %                   the result.
 %        'Validate' (true) : whether to validate input or not
+%        'CubeSize' : (ones(1,d)) cube size. 
 
 p = inputParser;
 addParamValue(p, 'Validate',true,@(x) islogical(x));
-addParamValue(p, 'Target','Bracket');
+addParamValue(p, 'Target','symmetric');
+d = size(M,1);
+addParamValue(p, 'CubeSize',ones(1,d));
 parse(p, varargin{:});
 pp = p.Results;
 if (pp.Validate)
     isMatrixValid(M);
 end
-d = size(M,1);
-shift = 0.5*ones(1,d);
+shift = 0.5*pp.CubeSize;
 if (strcmp(pp.Target,'unit')) %lazy
-    shift = zeros(1,d);
+    shift = pp.CubeSize;
 end
 maxInd = zeros(1,d);
 mysum = nestedFor(zeros(1,d),ones(1,d));
 while mysum.hasNext()
     omega = abs(ceil(M*(mysum.next()' - shift')))'+1;
     maxInd = max(maxInd,omega);
-end
+end    
 end
 
