@@ -65,6 +65,5 @@ while summation.hasNext()
     assert(actBSq ~= 0,'The translates of phi are not linearly independent w.r.t pattern(N)');
     hatb(indMc) = hata(indMc)*sqrt(abs(det(J))/actBSq);
     hatb(indM2c) = hata(indM2c)*sqrt(abs(det(J))/actBSq);
-    % TODO: Computations
 end
 debug('time',3,'StopTimer','orthogonalizeInTranslatestiming');

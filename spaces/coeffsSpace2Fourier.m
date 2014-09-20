@@ -1,16 +1,16 @@
-function ckf = coeffsSpace2Fourier(hata,ckphi,origin,M,varargin)
+function ckf = coeffsSpace2Fourier(M,hata,ckphi,origin,varargin)
 % coeffsSpace2Fourier(hata,ckphiorigin,M)
 % compute the Fourier coefficients of f, ckf, based on hata, the Fourier
 % transform of its coefficients a wrt the translates T(y)phi, y from the
 % pattern(M). 
 %
 %    INPUT
+%         M      : matrix indicating the pattern for the translates of phi
 %        hata    : Fourier transform of the coefficients of the sum of
 %                  T(y)phi yielding f.
 %         ckphi  : Fourier coefficitents of phi
 %         origin : origin, i.e. the index corr. to c_0 iin both above
 %                  parameters ckf and ckphi
-%         M      : matrix indicating the pattern for the translates of phi
 %
 %    OUTPUT
 %         ckf    : Fourier coefficients of f
