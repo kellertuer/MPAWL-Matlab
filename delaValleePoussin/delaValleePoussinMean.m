@@ -2,9 +2,9 @@ function [ckphi, BSums] = delaValleePoussinMean(g,M,varargin)
 % delaValleePoussin(g,M)
 % Generate the de la Vallée Poussin mean based on the function g with
 % respect to the translates of pattern(M), where g has to be a partition of
-% unity in the d-dimensional space, nonnegative and positive on the unit
-% cube. For simplicity g may also be a number or vector, which reduces to
-% using the pyramidFunction
+% unity in the d-dimensional space, nonnegative everywhere and positive on
+% the unit cube. For simplicity g may also be a number or vector, which
+% reduces to using the pyramidFunction
 %
 % INPUT
 %    g : a function or vector characterizing the de la Vallée Poussin mean
@@ -24,7 +24,7 @@ function [ckphi, BSums] = delaValleePoussinMean(g,M,varargin)
 %  'Support'       : cube indicating the support, if g is a function. for
 %                    the vector case, the support is determined
 %                    automatically. If it is not given for g, the area
-%                    M*unit cube is taken.
+%                    2*M*unit cube is taken.
 %
 % ---
 % MPAWL, R. Bergmann ~ 2014-09-18
@@ -32,7 +32,7 @@ p = inputParser;
 addParamValue(p, 'Validate',true,@(x) islogical(x));
 addParamValue(p, 'File',{});
 addParamValue(p, 'Orthonormalize',true,@(x) islogical(x));
-addParamValue(p, 'Support',[]);
+addParamValue(p, 'Support',1);
 parse(p, varargin{:});
 pp = p.Results;
 if (pp.Validate)
@@ -93,13 +93,13 @@ end
 d = size(M,2);
 adM = abs(det(M));
 if isvector(g)
-    ind = 2*max(g,pp.Support);
+    ind = 2*max(g,pp.Support*ones(size(g)));
     tmax = getMaxIndex(M,Target','symetric','Cube',ind);
     torigin = tmax+1;
     debug('text',3,'Text','Computing de la Vallée Poussin scaling function');
     ckphi = zeros(2*tmax+1);
     summation = nestedFor(zeros(1,d),2*tmax+1);
-    while(summation.hasnext) %faster?
+    while(summation.hasnext()) %Can this be done faster?
         ind = summation.next();
         indc = num2cell(ind);
         v = 1;

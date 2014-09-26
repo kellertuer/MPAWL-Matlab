@@ -9,7 +9,8 @@ function hatb = orthTranslatesInSpace(hata, M,J,varargin)
 % INPUT
 %     hata : FT of coefficients of phi w.r.t translates T(y)xi, y in P(M)
 %     M    : integer matrix; basis for the pattern w.r.t of xi
-%     J    ; integer matrix, such that inv(J).M is integer
+%     J    ; integer matrix indicating the subpattern, i.e. such that
+%            inv(J).M is integer
 %
 % OUTPUT
 %     hatb : coeffs of phi_2, which spans the same space of phi, but whose
