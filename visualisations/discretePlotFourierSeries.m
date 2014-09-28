@@ -10,9 +10,9 @@ function pixelsimg = discretePlotFourierSeries( resolution, coefficients,varargi
 %                  computed as (size(coefficients-1)/2, is not given.
 %
 % OUTPUT
-%   pixelsimg    : resulting pixel image
+%   pixelsimg    : resulting pixel image (or higher dimensional data).
 % ---
-% MPAWL, R. Bergmann ~2014-09-20
+% MPAWL, R. Bergmann ~2014-09-28
 
 p = inputParser;
 addOptional('origin',(size(coefficients)-1)/2);
