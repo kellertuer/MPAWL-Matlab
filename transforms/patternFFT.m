@@ -39,7 +39,7 @@ function hatb = patternFFT(M,b,varargin)
    end
    debug('text',3,'Text',['Starting the ',num2str(dM),'-dim. Fourier Transform for b (size: ',num2str(size(b)),').']);
    debug('time',3,'StartTimer','pfft');
-   inthatb = 1/sqrt(det(M))*fftn(intb); %dM-dimensional Fourier transform
+   inthatb = fftn(intb); %dM-dimensional Fourier transform
    debug('time',3,'StopTimer','pfft');
    if isvector(b)
        hatb = inthatb(:);
