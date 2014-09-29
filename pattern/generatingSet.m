@@ -17,6 +17,6 @@ function s = generatingSet(M,varargin)
 % ---
 % MPAWL 1.0, R. Bergmann ~ 2013-11-15 ~ last edit: 2014-08-19
 
-s = M*pattern(patternNormalForm(M),varargin{:});
+s = round(M*pattern(patternNormalForm(M),varargin{:}));
 
 end
