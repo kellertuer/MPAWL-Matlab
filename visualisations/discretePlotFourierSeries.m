@@ -1,4 +1,4 @@
-function pixelsimg = discretePlotFourierSeries( resolution, coefficients,varargin)
+function pixelsimg = discretePlotFourierSeries( resolution, coefficients)
 % discretePlotFourierSeries(resolution, coefficients(, origin))
 % produce an image or array fom given Fourier coefficients into pixel image
 % of size resolution
@@ -11,32 +11,23 @@ function pixelsimg = discretePlotFourierSeries( resolution, coefficients,varargi
 %
 % OUTPUT
 %   pixelsimg    : resulting pixel image (or higher dimensional data).
+%
+% OPTIONAL PARAMETERS
 % ---
 % MPAWL, R. Bergmann ~2014-09-28
 
-p = inputParser;
-addOptional('origin',(size(coefficients)-1)/2);
-parse(p, varargin{:});
-pp = p.Results;
+origin = (size(coefficients)-1)/2;
 
-% All origin enrties integer
-assert(any(~mod(pp.origin,1)),'Origin has to be an integer vector');
 % lengths okay
 assert(( (length(resolution)==1)&&(isvector(coefficients)) )...
         ||( length(resolution)==length(size(coefficients)) ),...
     'The coefficients are of different dimension then the resolution');
-% lengths okay
-assert(length(resolution)==length(pp.origin),...
-    'Origin has to be the same length as number of resolution entries');
 % resolution large enough
 assert(any(size(coefficients)<=resolution),...
     ['The resolution (',num2str(resolution),...
      ' is too small to capture all fequencies of the coefficients (',...
         num2str(size(coefficients)),').']);
-% origin in range
-assert(all( (pp.origin>0)&(pp.origin<=size(coefficients)) ), 'The origin is out of range.');
     
-
     debug('text',3,'Text',['Generating an image of size ',resolution,'.']);
 
     diff = resolution - size(coefficients);
