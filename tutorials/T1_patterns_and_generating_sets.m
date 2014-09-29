@@ -7,11 +7,9 @@
 %
 % ---
 % MPAWL, R. Bergmann ~ 2014-09-29
-
-format compact
-
-setDebugLevel(3);
 clc
+format compact
+setDebugLevel(3);
 disp('--- Tutorial 1: Patterns and generating Sets ---');
 disp(' (a) pattern ');
 disp('We start wird a simple matrix');

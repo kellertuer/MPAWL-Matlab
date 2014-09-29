@@ -6,11 +6,9 @@
 %
 % ---
 % MPAWL, R. Bergmann ~ 2014-09-29
-
-format compact
-
-setDebugLevel(3);
 clc
+format compact
+setDebugLevel(3);
 disp('--- Tutorial 2: The Fourier Transform on arbitrary patterns');
 disp(' Imagine the pattern given by');
 M = [16,4;0,16] %#ok<*NOPTS>
