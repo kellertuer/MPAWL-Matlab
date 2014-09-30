@@ -39,7 +39,7 @@ if (pp.Validate)
     assert(patternDimension(J)==1,['The pattern dimension of J has to be 1 not',num2str(patternDimension(J)),'.']);
     isMatrixValid(inv(J).M);
 end
-N = round(inv(J)*M); %round for security reasons?
+N = round(inv(J)*M); %#ok<MINV> %round for security reasons?
 assert(det(M) == det(N)*det(J),'N = inv(J)M hast to be integer valued');
 FiledlVP = '';
 FileWav = '';

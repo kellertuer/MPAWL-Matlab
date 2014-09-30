@@ -32,7 +32,7 @@ pp = p.Results;
 if (pp.Validate)
     isMatrixValid(M);
 end
-if ( numel(pp.File)>0) && (strcmp(pp.File(end-3:end),'.mat'))
+if numel(pp.File)>0
     if exist(pp.File,'file')
        vars = load(pp.File,'M','v');
        if (all(vars.M==M))
