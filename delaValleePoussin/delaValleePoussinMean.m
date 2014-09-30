@@ -49,15 +49,15 @@ if iscellstr(pp.File) && (length(pp.File)==2)
     FileStr = pp.File{1};
 end
 if ~isempty(FileStr)
-    debug('text',3,'Text',['Loading coefficients from file',FileStr]);
+    debug('text',3,'Text',['Loading coefficients from file ''',FileStr,''.']);
     if exist(FileStr,'file')
-        vars = load(FileStr,'M','ckphi');
+        vars = load(FileStr,'M','ckphi','orthonormalized');
         if (all(vars.M==M))
             ckphi = vars.ckphi;
-            if pp.Orthonormalize
+            if pp.Orthonormalize && ~vars.orthonormalized
                 torigin = (size(ckphi)-1)/2;
                 ckBSq = bracketSums(ckphi,torigin,M,'Validate',false,'Compute','absolute Squares');
-                ckphi = getFourierFromSpace(1/sqrt(abs(det(M))*ckBSq),ckphi,origin,M,'Validate',false);
+                ckphi = coeffsSpace2Fourier(M,1./(sqrt(ckBSq)),ckphi,torigin,'Validate',false);
             end
         end
         debug('text',3,'Text',['The specified file ''',FileStr,''' does not contain coefficients for M, will overwrite them.']);
@@ -90,6 +90,7 @@ if ~isempty(BSStr)
         end
     end
 end
+debug('time',3,'StartTimer','constructing the de la Vallée Poussin mean');
 d = size(M,2);
 adM = abs(det(M));
 if isvector(pg) && length(pg)==1
@@ -132,10 +133,11 @@ elseif isa(g,'function handle')
 else
     error('Unknown input type g');
 end
+debug('time',3,'StopTimer','constructing the de la Vallée Poussin mean');
 if pp.Orthonormalize
     torigin = (size(ckphi)-1)/2;
     ckBSq = bracketSums(ckphi,torigin,M,'Validate',false,'Compute','absolute Squares');
-    ckphi = coeffsSpace2Fourier(M,1./(sqrt(abs(det(M))*sqrt(ckBSq))),ckphi,torigin,'Validate',false);
+    ckphi = coeffsSpace2Fourier(M,1./(sqrt(ckBSq)),ckphi,torigin,'Validate',false);
 end
 % File savings
 if ~isempty(BSStr) || (nargout==2)
@@ -150,7 +152,8 @@ if ~isempty(BSStr) || (nargout==2)
 end
 if ~isempty(FileStr)
     try
-        save(FileStr,'M','ckphi');
+        orthonormalized = pp.Orthonormalize; %#ok<NASGU>
+        save(FileStr,'M','ckphi','orthonormalized');
     catch err
         warning(['Could not save to file ''',FileStr,''', the following error occured: ',err.message]);
     end

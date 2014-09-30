@@ -15,7 +15,7 @@ function v = sample(M,f,varargin)
 %   'File' : ([]) specify a file string. If a file exists, this method
 %            tries to load from that file. If that fails or the files does
 %            not exist, the file is created (or overwritten!) with the sample values.
-%   'Sampling Method': ('pointwise') Specify a method to sample, i.e. how
+%   'SamplingMethod': ('pointwise') Specify a method to sample, i.e. how
 %                      to call f. 'pointwise' will call f for each point
 %                      seperately. 'point row' will call f once with all
 %                      points rowwise in a matrix, i.e. a matrix det(M)xd,
@@ -26,17 +26,17 @@ function v = sample(M,f,varargin)
 p = inputParser;
 addParamValue(p, 'Validate',true,@(x) islogical(x));
 addParamValue(p, 'File','');
-addParamValue(p, 'SamplingMethod','Pointwise');
+addParamValue(p, 'SamplingMethod','pointwise');
 parse(p, varargin{:});
 pp = p.Results;
 if (pp.Validate)
     isMatrixValid(M);
-    isMatrixValid(J);
 end
 if ( numel(pp.File)>0) && (strcmp(pp.File(end-3:end),'.mat'))
     if exist(pp.File,'file')
        vars = load(pp.File,'M','v');
        if (all(vars.M==M))
+            debug('text',3,'Text',['Sampling values loaded from file ''',pp.File,'''.']);
            v = vars.v;
            return;
        end
@@ -54,25 +54,25 @@ if ~isa(f, 'function_handle') % no function handle
     assert(all(size(f))==[m,m],['The data array has to be of size ',num2str(m),'x',num2str(m),'.']);
 end
 pointSet = 0;
-if (strcmp(pp.SamplingMethod,'pointwise'));
+if ~strcmp(pp.SamplingMethod,'pointwise');
     pointSet = zeros(m,d); %m rows, d cols -> create in row mode
 end
-summation = nestedFor(zeros(1,dM),epsilon-1);
-v = zeros(epsilon);
+summation = nestedFor(zeros(1,dM),epsilon'-1);
+v = zeros(epsilon');
 debug('text',2,'Text','Starting to sample');
 debug('time',3,'StartTimer','samplingTimer');
 while summation.hasNext()
     ind = summation.next();
-    indc = num2cell(ind);
-    pt = 2*pi*modM(pMBasis*ind,eye(d),'Target','symmetric','Validate',false);
-    if ~isa(f,'function handle')
-        indA = num2cell( (modM(pMBasis*ind,eye(d),'Target','symmetric','Validate',false) + 0.5)*m);
-        v(indc) = f(indA);
+    indcp1 = num2cell(ind'+1);
+    pt = 2*pi*modM(pMBasis*ind',eye(d),'Target','symmetric','Validate',false);
+    if ~isa(f,'function_handle')
+        indA = num2cell( (modM(pMBasis*ind',eye(d),'Target','symmetric','Validate',false) + 0.5)*m);
+        v(indcp1) = f(indA);
     else %function handle
         if (sum(size(pointSet))==2) % point wise sampling
-            v(indc) = f(pt);
+            v(indcp1{:}) = f(pt);
         else
-            pointSet(sub2ind(epsilon,ind),:) = pt; %#ok<AGROW>
+            pointSet(sub2ind(epsilon,indcp1{:}),:) = pt;  %#ok<AGROW>
         end
     end
 end
@@ -82,14 +82,16 @@ if (sum(size(pointSet))~=2)
         v = f(pointSet);
     elseif (strcmp(pp.SamplingMethod,'point col'))
         v = f(pointSet');
-    else
+    elseif ~strcmp(pp.SamplingMethod,'pointwise')
         error('unknown sampling type');
     end
-    v = reshape(v,epsilon); %reshape to fit cycles after sampling
+    epsc = num2cell(epsilon');
+    v = reshape(v',epsc{:}); %reshape to fit cycles after sampling
 end
 if (numel(pp.File) > 0)
     try
         save(pp.File,'M','v');
+        debug('text',3,'Text',['Sampling values saved to file ''',pp.File,'''.']);
     catch err
         warning(['Could not save to file ''',pp.File,''', the following error occured: ',err.message]);
     end    
