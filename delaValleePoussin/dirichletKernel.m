@@ -21,9 +21,9 @@ function [ckphi, BSums] = dirichletKernel(M,varargin)
 % ---
 % MPAWL, R. Bergmann ~ 2014-09-19
 if (nargout==1)
-    ckphi = delaValleePoussinMean(0,M,varargin);
+    ckphi = delaValleePoussinMean(0,M,varargin{:});
 elseif (nargout==2)
-    [ckphi,BSums] = delaValleePoussinMean(0,M,varargin);
+    [ckphi,BSums] = delaValleePoussinMean(0,M,varargin{:});
 else
     error('Too many return values');
 end

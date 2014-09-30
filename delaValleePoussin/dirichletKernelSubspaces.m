@@ -22,6 +22,6 @@ function [hata,hatb] = dirichletKernelSubspaces(M,varargin)
 %                    spaces are succesfully loaded, this option is ignored
 % ---
 % MPAWL, R. Bergmann ~ 2014-09-26
-[hata,hatb] = delaValleePoussinSubspaces(0,M,J,varargin);
+[hata,hatb] = delaValleePoussinSubspaces(0,M,J,varargin{:});
 end
 

@@ -6,7 +6,7 @@ function ckf = coeffsSpace2Fourier(M,hata,ckphi,origin,varargin)
 %
 %    INPUT
 %         M      : matrix indicating the pattern for the translates of phi
-%        hata    : Fourier transform of the coefficients of the sum of
+%         hata   : Fourier transform of the coefficients of the sum of
 %                  T(y)phi yielding f.
 %         ckphi  : Fourier coefficitents of phi
 %         origin : origin, i.e. the index corr. to c_0 iin both above
@@ -45,7 +45,7 @@ summation = nestedFor(zeros(1,dM),epsilon-ones(1,dM));
 % reorder
 while (summation.hasNext())
     ind = summation.next();
-    indc = num2cell(ind+1);
+    indc = num2cell(ind'+1);
     sumIndc = num2cell(modM(ind*hM,transpose(M),'Target','symmetric','Validate',false,'Index',true)'+torigin);
     coeffsOI(sumIndc{:}) = hata(indc{:});
 end
@@ -53,7 +53,7 @@ ckf = zeros(size(ckphi));
 summation = nestedFor(ones(size(size(ckphi))),size(ckphi));
 while (summation.hasNext())
     ind = summation.next();
-    indc = num2cell(ind);
+    indc = num2cell(ind');
     sumIndc = num2cell(modM((ind-origin)',transpose(M),'Target','symmetric','Validate',false,'Index',true)'+torigin);
     ckf(indc{:}) = coeffsOI(sumIndc{:})*ckphi(indc{:});
 end

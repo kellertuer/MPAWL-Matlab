@@ -32,7 +32,7 @@ end
 
 %local 1D
 function y = pyramidfunction1D(alpha,x) %alpha a number, x a row
-y = zeros(x);
+y = zeros(size(x));
 if (alpha==0)
     y(abs(x)<1/2) = 1;
     y(abs(x)==1/2) = 1/2;

@@ -46,7 +46,7 @@ checks = Inf(2*tmax+1);
 sumObj = nestedFor(ones(size(size(ckphi))),size(ckphi)); %run through ckspace
 while sumObj,hasNext()
     Ind = sumObj.next();
-    Indc = num2cell(Ind);
+    Indc = num2cell(Ind');
     %INdex in checks array
     checkIndc = num2cell(modM(Ind-origin,transpose(M),'Target','symmetric','Validate',false,'Index',true)+torigin);
     if ckphi(Indc{:}) == 0
@@ -78,7 +78,7 @@ hM = generatingSetBasis(transpose(M));
 summation = nestedFor(zeros(1,dM),epsilon-ones(1,dM));
 while (summation.hasNext())
     ind = summation.next();
-    indc = num2cell(ind+1);
+    indc = num2cell(ind'+1);
     sumInd = num2cell(modM(ind*hM,transpose(M),'Target','symmetric','Index',true)'+torigin);
     hata(indc{:}) = checks(sumInd{:});
 end

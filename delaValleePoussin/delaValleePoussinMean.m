@@ -1,4 +1,4 @@
-function [ckphi, BSums] = delaValleePoussinMean(g,M,varargin)
+function [ckphi, BSums] = delaValleePoussinMean(pg,M,varargin)
 % delaValleePoussin(g,M)
 % Generate the de la Vallée Poussin mean based on the function g with
 % respect to the translates of pattern(M), where g has to be a partition of
@@ -92,34 +92,42 @@ if ~isempty(BSStr)
 end
 d = size(M,2);
 adM = abs(det(M));
+if isvector(pg) && length(pg)==1
+    g = pg.*ones(1,d);
+else
+    g = pg;
+end
 if isvector(g)
-    ind = 2*max(g,pp.Support*ones(size(g)));
-    tmax = getMaxIndex(M,Target','symetric','Cube',ind);
+    ind = max(1+g,pp.Support*ones(size(g)));
+    tmax = getMaxIndex(transpose(M),'Target','symetric','Cube',ind);
     torigin = tmax+1;
     debug('text',3,'Text','Computing de la Vallée Poussin scaling function');
     ckphi = zeros(2*tmax+1);
-    summation = nestedFor(zeros(1,d),2*tmax+1);
-    while(summation.hasnext()) %Can this be done faster?
+    summation = nestedFor(ones(1,d),2*tmax+1);
+    while(summation.hasNext()) %Can this be done faster?
         ind = summation.next();
-        indc = num2cell(ind);
+        indcp1 = num2cell(ind');
         v = 1;
-        p = M\(ind-torigin);
+        p = transpose(M)\(ind'-torigin');
         for j=1:d
             v = v * pyramidFunction(g(j),p(j));
         end
-        ckphi(indc{:}) = 1/adM*v;
+%        ckphi(indc{:}) = 1/adM*v; %Mathematica, other FFT factors
+        ckphi(indcp1{:}) = v;
     end
 elseif isa(g,'function handle')
     ind = 2*(pp.Support);
-    tmax = getMaxIndex(M,Target','symetric','Cube',ind);
+    tmax = getMaxIndex(transpose(M),Target','symetric','Cube',ind);
     torigin = tmax+1;
     debug('text',3,'Text','Computing de la Vallée Poussin scaling function');
     ckphi = zeros(2*tmax+1);
-    summation = nestedFor(zeros(1,d),2*tmax+1);
+    summation = nestedFor(ones(1,d),2*tmax+1);
     while(summation.hasnext) %faster?
         ind = summation.next();
-        indc = num2cell(ind);
-        ckphi(indc{:}) = 1/adM*g(M\(ind-torigin));
+        indcp1 = num2cell(ind'+1);
+%        ckphi(indcp1{:}) = 1/adM*g(transpose(M)\(ind'-torigin'));
+%        %Mathematica FFT version
+        ckphi(indcp1{:}) = 1/adM*g(transpose(M)\(ind'-torigin'));
     end
 else
     error('Unknown input type g');
@@ -127,10 +135,10 @@ end
 if pp.Orthonormalize
     torigin = (size(ckphi)-1)/2;
     ckBSq = bracketSums(ckphi,torigin,M,'Validate',false,'Compute','absolute Squares');
-    ckphi = getFourierFromSpace(1/sqrt(abs(det(M))*ckBSq),ckphi,origin,M,'Validate',false);
+    ckphi = coeffsSpace2Fourier(M,1./(sqrt(abs(det(M))*sqrt(ckBSq))),ckphi,torigin,'Validate',false);
 end
 % File savings
-if (~isempty(BSStr) || (nargout==2)
+if ~isempty(BSStr) || (nargout==2)
     BSums = bracketSums(ckphi,torigin,M,'Validate',false);
     if ~isempty(BSStr)
         try

@@ -36,8 +36,6 @@ if (pp.Validate)
     assert(all(origin>0),'origin has to be a positive vector');
     assert(all(origin<size(data)),'origin has to be in range of data');
 end
-m = abs(det(M));
-d = size(M,1);
 dM = patternDimension(M);
 epsilon = diag(snf(M));
 epsilon = epsilon(d-dM+1:d);
@@ -50,7 +48,7 @@ summation = nestedFor(ones(1,size(size(data),2)),size(data));
 while summation.hasNext()
     index = summation.next();
     epsMod = num2cell(modM((index-origin)',transpose(M),'Target','symmetric','Index',true)'+torigin);
-    index = num2cell(index);
+    index = num2cell(index');
     if strcmp(pp.Compute,'absolute Squares')
         sums(epsMod{:}) = sums(epsMod{:}) + abs(data(index{:}))^2;
     else % else default: brackets
@@ -64,11 +62,11 @@ else
     hatb = zeros(epsilon);
 end
 hM = generatingSetBasis(transpose(M));
-summation = nestedFor(zeros(1,dM),epsilon-ones(1,dM));
+summation = nestedFor(zeros(1,dM),epsilon-1);
 while (summation.hasNext())
     ind = summation.next();
-    indc = num2cell(ind + 1);
+    indcp1 = num2cell(ind' + 1);
     sumInd = num2cell(modM(ind*hM,transpose(M),'Target','symmetric','Index',true)'+torigin);
-    hatb(indc{:}) = sums(sumInd{:});
+    hatb(indcp1{:}) = sums(sumInd{:});
 end
 end
