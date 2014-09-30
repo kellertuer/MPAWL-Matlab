@@ -41,30 +41,30 @@ assert(det(M) == det(N)*det(J),'N = inv(J)M hast to be integer valued');
 assert(patternDimension(J)==1,['The pattern dimension of J has to be 1 not',num2str(patternDimension(J)),'.']);
 dM = patternDimension(M);
 dN = patternDimension(N);
-debug(text,2,'Orthonormalizing Coefficients...');
+debug('text',2,'Text','Orthonormalizing Coefficients...');
 epsilon = diag(snf(M)); epsilon = epsilon(d-dM+1:d);
 mu = diag(snf(N)); mu = mu(d-dN+1:d);
-NTg = transpose(N)*generatingSetBasis(transpose(J));
-InvNy = N\patternBasis(patternNormalForm(J));
-hN = generatingSetbasis(transpose(N));
-lambdag = generatingSetBasisDecomp(NTg,transpose(M),'Target','symmetric','Validate',false);
+NTg = transpose(N)*generatingSetBasis(transpose(J),'Target','unit');
+hN = generatingSetBasis(transpose(N));
+lambdag = round(generatingSetBasisDecomp(NTg,transpose(M),'Target','symmetric','Validate',false));
 P = zeros(dM,dN);
 for i=1:dN
     P(:,i) = generatingSetBasisDecomp(hN(:,i),transpose(M),'Target','symmetric','Validate',false);
 end
-hatb = inf(epsilon);
-summation = NestedFor(zeros(1,dN),mu-1);
+P = round(P);
+hatb = inf(epsilon');
+summation = nestedFor(zeros(1,dN),mu'-1);
 % Timer Debug.
 debug('time',3,'StartTimer','orthogonalizeInTranslatestiming');
 while summation.hasNext()
     ind = summation.next();
-    indM = modM(P*(ind'),diag(epsilon));
-    indM2 = modM(P*(ind')+lambdag,diag(epsilon));
-    indMc = num2cell(indM);
-    indM2c = num2cell(indM2);
-    actBSq = abs(hata(indMc))^2 + abs(hata(indM2c))^2;
+    indM = modM(P*(ind'),diag(epsilon),'Index',true)';
+    indM2 = modM(P*(ind')+lambdag,diag(epsilon),'Index',true)';
+    indMcp1 = num2cell(indM+1);
+    indM2cp1 = num2cell(indM2'+1);
+    actBSq = abs(hata(indMcp1{:}))^2 + abs(hata(indM2cp1{:}))^2;
     assert(actBSq ~= 0,'The translates of phi are not linearly independent w.r.t pattern(N)');
-    hatb(indMc) = hata(indMc)*sqrt(abs(det(J))/actBSq);
-    hatb(indM2c) = hata(indM2c)*sqrt(abs(det(J))/actBSq);
+    hatb(indMcp1{:}) = hata(indMcp1{:})*sqrt(abs(det(J))/actBSq);
+    hatb(indM2cp1{:}) = hata(indM2cp1{:})*sqrt(abs(det(J))/actBSq);
 end
 debug('time',3,'StopTimer','orthogonalizeInTranslatestiming');

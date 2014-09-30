@@ -92,15 +92,29 @@ if ~isempty(BSStr)
 end
 debug('time',3,'StartTimer','constructing the de la Vallée Poussin mean');
 d = size(M,2);
-adM = abs(det(M));
-if isvector(pg) && length(pg)==1
+% adM = abs(det(M));
+if isvector(pg) && length(pg)==1 && ~isa(pg,'function_handle') 
     g = pg.*ones(1,d);
 else
     g = pg;
 end
-if isvector(g)
-    ind = max(1+g,pp.Support*ones(size(g)));
-    tmax = getMaxIndex(transpose(M),'Target','symetric','Cube',ind);
+if isa(g,'function_handle')
+    ind = 2*(pp.Support);
+    tmax = getMaxIndex(transpose(M),'Target','symetric','Cube',ind)+1;
+    torigin = tmax+1;
+    debug('text',3,'Text','Computing de la Vallée Poussin scaling function');
+    ckphi = zeros(2*tmax+1);
+    summation = nestedFor(ones(1,d),2*tmax+1);
+    while(summation.hasNext()) %faster?
+        ind = summation.next();
+        indcp1 = num2cell(ind'+1);
+%       ckphi(indcp1{:}) = 1/adM*g(transpose(M)\(ind'-torigin'));
+%       %Mathematica FFT version
+        ckphi(indcp1{:}) = g(transpose(M)\(ind'-torigin'));
+    end
+elseif isvector(g)
+    ind = max(1+2*g,pp.Support*ones(size(g)));
+    tmax = getMaxIndex(transpose(M),'Target','symetric','Cube',ind)+1; %+1 for security
     torigin = tmax+1;
     debug('text',3,'Text','Computing de la Vallée Poussin scaling function');
     ckphi = zeros(2*tmax+1);
@@ -115,20 +129,6 @@ if isvector(g)
         end
 %        ckphi(indc{:}) = 1/adM*v; %Mathematica, other FFT factors
         ckphi(indcp1{:}) = v;
-    end
-elseif isa(g,'function handle')
-    ind = 2*(pp.Support);
-    tmax = getMaxIndex(transpose(M),Target','symetric','Cube',ind);
-    torigin = tmax+1;
-    debug('text',3,'Text','Computing de la Vallée Poussin scaling function');
-    ckphi = zeros(2*tmax+1);
-    summation = nestedFor(ones(1,d),2*tmax+1);
-    while(summation.hasnext) %faster?
-        ind = summation.next();
-        indcp1 = num2cell(ind'+1);
-%        ckphi(indcp1{:}) = 1/adM*g(transpose(M)\(ind'-torigin'));
-%        %Mathematica FFT version
-        ckphi(indcp1{:}) = 1/adM*g(transpose(M)\(ind'-torigin'));
     end
 else
     error('Unknown input type g');

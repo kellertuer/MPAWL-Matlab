@@ -24,9 +24,9 @@ else
     alpha = palpha;
 end
 alpha = ones(size(x,1),1).*alpha;
-y = ones(size(x,2));
+y = ones(1,size(x,2));
 for i=1:size(x,1)
-y = y*pyramidfunction1D(alpha(i),x(i,:));
+y = y.*pyramidfunction1D(alpha(i),x(i,:));
 end
 end
 
@@ -34,11 +34,11 @@ end
 function y = pyramidfunction1D(alpha,x) %alpha a number, x a row
 y = zeros(size(x));
 if (alpha==0)
-    y(abs(x)<1/2) = 1;
-    y(abs(x)==1/2) = 1/2;
+    y(abs(x)<1/2) = 1 * ones(size(y(abs(x)<1/2)));
+    y(abs(x)==1/2) = 1/2 * ones(size(y(abs(x)==1/2)));
 else
-    y( abs(x) < 1/2-alpha) = 1;
-    y( (abs(x)>=1/2-alpha) & (abs(x) <= 1/2+alpha)) = (0.5+alpha-abs(x))/(2*alpha);
+    y( abs(x) < 1/2-alpha) = 1 * ones(size( y( abs(x) < 1/2-alpha) ));
+    y( (abs(x)>=1/2-alpha) & (abs(x) <= 1/2+alpha)) = (0.5+alpha-abs(x( (abs(x)>=1/2-alpha) & (abs(x) <= 1/2+alpha) )))./(2*alpha);
     %rest zero per se
 end
 end

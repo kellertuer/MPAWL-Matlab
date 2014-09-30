@@ -37,9 +37,11 @@ if (pp.Validate)
     isMatrixValid(M);
     isMatrixValid(J);
     assert(patternDimension(J)==1,['The pattern dimension of J has to be 1 not',num2str(patternDimension(J)),'.']);
-    isMatrixValid(inv(J).M);
-end
-N = round(inv(J)*M); %#ok<MINV> %round for security reasons?
+    N = round(inv(J)*M); %#ok<MINV> %round for security reasons?
+    isMatrixValid(N);
+else
+    N = round(inv(J)*M); %#ok<MINV> %round for security reasons?
+end    
 assert(det(M) == det(N)*det(J),'N = inv(J)M hast to be integer valued');
 FiledlVP = '';
 FileWav = '';
@@ -48,8 +50,9 @@ d = size(M,2);
 assert(det(M) == det(N)*det(J),'N = inv(J)M hast to be integer valued');
 dM = patternDimension(M);
 dN = patternDimension(N);
+hM = generatingSetBasis(transpose(M));
 epsilon = diag(snf(M)); epsilon = epsilon(d-dM+1:d);
-assert( ( isvector(g) || isa(g,'function handle')),... %neither vector nor function
+assert( ( isvector(g) || isa(g,'function_handle')),... %neither vector nor function
     'g has to be a vector or value or a function handle');
 if ischar(pp.File) %one file indicated -> load dlVP compute Wavelet
     FiledlVP = pp.File; %try loading
@@ -90,55 +93,56 @@ if ~isempty(FileWav)
 end
 NTg = transpose(N)*generatingSetBasis(transpose(J));
 InvNy = N\patternBasis(patternNormalForm(J));
-hN = generatingSetbasis(transpose(N));
-lambdag = generatingSetBasisDecomp(NTg,transpose(M),'Target','symmetric','Validate',false);
+hN = generatingSetBasis(transpose(N));
+lambdag = round(generatingSetBasisDecomp(NTg,transpose(M),'Target','symmetric','Validate',false));
 P = zeros(dM,dN);
 for i=1:dN
     P(:,i) = generatingSetBasisDecomp(hN(:,i),transpose(M),'Target','symmetric','Validate',false);
 end
+P = round(P);
 if (numel(hata)>0) && (numel(hatb)>0) %both successfully loaded
     return
 elseif (numel(hata)==0) && (numel(hatb)>0) %Compute a from b
-    hata = inf(epsilon);
-    debug('time',3,'StopTimer','computeScalingFtiming');
+    hata = inf(epsilon');
     debug('text',3,'Text','Computing corresponding scaling function as orthogonal compplement of the loaded wavelet function');
     debug('time',3,'StartTimer','computeScalingForthtiming');
-    summation = NestedFor(zeros(1,dM),epsilon-1);
-    while(summation.hasnext()) %Can this be done faster?
+    summation = NestedFor(zeros(1,dM),epsilon'-1);
+    while(summation.hasNext()) %Can this be done faster?
         ind = summation.next();
         indcp1 = num2cell(ind+1);
-        indshift = modM(ind+lambdag,diag(epsilon),'Validate',false,'Target','unit');
+        indshift = modM(ind'+lambdag,diag(epsilon),'Validate',false,'Target','unit','Index',true);
         indshiftcp1 = num2cell(indshift+1);
-        hata(indcp1{:}) = exp(-2*pi*I* (InvNy*(ind*hM)))*hatb(indshiftcp1{:});
+        hata(indcp1{:}) = exp(-2*pi*1i* (InvNy*(ind*hM)))*hatb(indshiftcp1{:});
     end
     debug('time',3,'StopTimer','computeScalingForthtiming');
 elseif (numel(hata)==0) && (numel(hatb)==0) 
-    hata = inf(epsilon);
-    summation = NestedFor(zeros(1,dM),epsilon-1);
+    hata = inf(epsilon');
+    summation = nestedFor(zeros(1,dM),epsilon'-1);
     debug('text',3,'Text','Computing de la Vallée Poussin scaling function');
     debug('time',3,'StartTimer','computeScalingFtiming');
-    while(summation.hasnext()) %Can this be done faster?
+    while(summation.hasNext()) %Can this be done faster?
         ind = summation.next();
         indcp1 = num2cell(ind+1);
-        x = modM( (transpose(N)\ind)*hM,transpose(M),'Validate',false,'Target','symmetric');
+        x = transpose(N)\modM( hM * ind',transpose(M),'Validate',false,'Target','symmetric');
         hata(indcp1{:}) = 1/abs(det(J))* BnSum(J,g,x);
     end
+    debug('time',3,'StopTimer','computeScalingFtiming');
 end %now only hatb might still be 0, but the general wavelet is now computed
-hatb = inf(epsilon);
+hatb = inf(epsilon');
 debug('text',3,'Text','Computing corresponding Wavelet function');
 debug('time',3,'StartTimer','computeWaveletFtiming');
-summation = NestedFor(zeros(1,dM),epsilon-1);
-while(summation.hasnext()) %Can this be done faster?
+summation = nestedFor(zeros(1,dM),epsilon'-1);
+while(summation.hasNext()) %Can this be done faster?
     ind = summation.next();
     indcp1 = num2cell(ind+1);
-    indshift = modM(ind+lambdag,diag(epsilon),'Validate',false,'Target','unit');
+    indshift = modM(ind'+lambdag,diag(epsilon),'Validate',false,'Target','unit','Index',true);
     indshiftcp1 = num2cell(indshift+1);
-    hatb(indcp1{:}) = exp(-2*pi*I* (InvNy*(ind*hM)))*hata(indshiftcp1{:});
+    hatb(indcp1{:}) = exp(-2*pi*1i* (InvNy'*(hM*(ind'))) ) * hata(indshiftcp1{:});
 end
 debug('time',3,'StopTimer','computeWaveletFtiming');
 if pp.Orthonormalize
-    hata = orthTranslatesInSapce(hata,M,J,'Validate',false);
-    hatb = orthTranslatesInSapce(hatb,M,J,'Validate',false);
+    hata = orthTranslatesInSpace(hata,M,J,'Validate',false);
+    hatb = orthTranslatesInSpace(hatb,M,J,'Validate',false);
 end
 % File savings
 if ~isempty(FiledlVP)
@@ -160,12 +164,13 @@ end
 function s = BnSum(J,g,x)
 d = size(J,2);
 s=0;
-summation = NestedFor(-2*zeros(1,dN),2*zeros(1,d));
-while(summation.hasnext()) %Can this be done faster?
-    if (isvector(g))
-        s = s+pyramidFunction(g,x+transpose(J).summation.next());
+summation = nestedFor(-2*zeros(1,d),2*zeros(1,d));
+while(summation.hasNext()) %Can this be done faster?
+    p = summation.next()';
+    if ~isa(g,'function_handle')
+        s = s+pyramidFunction(g,x+transpose(J)*p);
     else %function handle by previous verification
-        s = s+g(x+transpose(J).summation.next());
+        s = s+g(x+transpose(J)*p);
     end
 end
 end
