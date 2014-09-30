@@ -32,7 +32,7 @@ function hatb = patternIFFT(M,b,varargin)
     assert(numel(b)==detM,...
         'wrong number of elements (%d) in the data vector b. %d elements required',...
         numel(b),detM);
-   if isvector(b)
+   if isvector(b) && dM>1
        intb = reshape(b,e');
    else
        intb = b;

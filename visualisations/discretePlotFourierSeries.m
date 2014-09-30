@@ -6,8 +6,6 @@ function pixelsimg = discretePlotFourierSeries( resolution, coefficients)
 % INPUT
 %   resolution   : resolution of the image to be computed
 %   coefficients : Fourier coefficients
-%   origin       : (optional) index of the zero coefficients. It is
-%                  computed as (size(coefficients-1)/2, is not given.
 %
 % OUTPUT
 %   pixelsimg    : resulting pixel image (or higher dimensional data).
@@ -28,17 +26,17 @@ assert(any(size(coefficients)<=resolution),...
      ' is too small to capture all fequencies of the coefficients (',...
         num2str(size(coefficients)),').']);
     
-    debug('text',3,'Text',['Generating an image of size ',resolution,'.']);
+    debug('text',3,'Text',['Generating an image of size ',num2str(resolution),'.']);
 
     diff = resolution - size(coefficients);
-    diffeven = mod(diff,2);
+    diffeven = ~mod(diff,2);
     resorigin = zeros(size(resolution));
     
     % for even entries - share equally, for odd, one more to the left
-    diff(diffeven) = diff/2;
+    diff(diffeven) = diff(diffeven)/2;
     resorigin(diffeven) = origin(diffeven) + diff(diffeven);
 
-    diff(~diffeven) = floor(diff/2);
+    diff(~diffeven) = floor(diff(~diffeven)/2);
     resorigin(~diffeven) = origin(~diffeven) + diff(~diffeven) + 1;
 
     paddright = diff;

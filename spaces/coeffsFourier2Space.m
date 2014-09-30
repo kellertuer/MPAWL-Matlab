@@ -32,8 +32,6 @@ pp = p.Results;
 if (pp.Validate)
     isMatrixValid(M);
 end
-hM = generatingSetBasis(transpose(M),'Target','symmetric','Validate',false);
-m = det(M);
 d = size(M,1);
 dM = patternDimension(M);
 epsilon = diag(snf(M));
@@ -42,7 +40,7 @@ epsilon = epsilon(d-dM+1:d);
 tmax = getMaxIndex(transpose(M));
 torigin = tmax+1;
 checks = Inf(2*tmax+1);
-
+debug('time',3,'StartTimer','Generating space coefficients from Fourier coefficients');
 sumObj = nestedFor(ones(size(size(ckphi))),size(ckphi)); %run through ckspace
 while sumObj,hasNext()
     Ind = sumObj.next();
@@ -82,4 +80,5 @@ while (summation.hasNext())
     sumInd = num2cell(modM(ind*hM,transpose(M),'Target','symmetric','Index',true)'+torigin);
     hata(indc{:}) = checks(sumInd{:});
 end
+debug('time',3,'StopTimer','Generating space coefficients from Fourier coefficients');
 end

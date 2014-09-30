@@ -44,6 +44,7 @@ tmax = getMaxIndex(transpose(M));
 torigin = tmax+1;
 sums = zeros(2*tmax+1);
 %run over all indices of data
+debug('time',3,'StartTimer','the Bracket Sum');
 summation = nestedFor(ones(1,size(size(data),2)),size(data));
 while summation.hasNext()
     index = summation.next();
@@ -59,14 +60,16 @@ end
 if (sum(size(epsilon))==2) % one cycle
     hatb = zeros(1,epsilon);
 else
-    hatb = zeros(epsilon);
+    epsc = num2cell(epsilon');
+    hatb = zeros(epsc{:});
 end
 hM = generatingSetBasis(transpose(M));
-summation = nestedFor(zeros(1,dM),epsilon-1);
+summation = nestedFor(zeros(1,dM),epsilon'-1);
 while (summation.hasNext())
     ind = summation.next();
     indcp1 = num2cell(ind' + 1);
-    sumInd = num2cell(modM(ind*hM,transpose(M),'Target','symmetric','Index',true)'+torigin);
+    sumInd = num2cell(modM(hM*ind',transpose(M),'Target','symmetric','Index',true)'+torigin);
     hatb(indcp1{:}) = sums(sumInd{:});
 end
+debug('time',3,'StopTimer','the Bracket Sum');
 end

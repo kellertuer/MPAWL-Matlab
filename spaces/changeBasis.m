@@ -1,4 +1,4 @@
-function b = changeBasis(M, a, bracketSums)
+function b = changeBasis(M, a, bracketSums,varargin)
 % hatb = changeBasis(M,hata, bracketSums)
 % perform a change of basis on the coeffs a or hata, which are a DFT of a,
 % coeffs w.r.t. a basis of translates and the bracket sums are in order to
@@ -35,17 +35,15 @@ end
 d = size(M,1);
 dM = patternDimension(M);
 epsilon = diag(snf(M)); epsilon = epsilon(d-dM+1:d);
-if (ppV) && (~(all(size(a)==epsilon)))
-    assert(all(size(a)==epsilon),...
-        ['The required size for the coefficients is ''',num2str(epsilon),''' but a is of size ''',num2str(size(a)),'''.']);
-    assert(all(size(bracketSums)==epsilon),...
-        ['The required size for the Bracet sums is ''',num2str(epsilon),''' but bracketSums is of size ''',num2str(size(bracketSums)),'''.']);
+if (ppV) && (~(all(size(a)==epsilon')))
+    assert(all(size(a)==epsilon'),...
+        ['The required size for the coefficients is ''',num2str(epsilon'),''' but a is of size ''',num2str(size(a)),'''.']);
+    assert(all(size(bracketSums)==epsilon'),...
+        ['The required size for the Bracet sums is ''',num2str(epsilon'),''' but bracketSums is of size ''',num2str(size(bracketSums)),'''.']);
 end
 if strcmp(p.Results.Input,'time')
-    debug('text',3,'Performing Fourier Transform on the input from time to Fourier domain');
-    debug('time',3,'StartTimer','inputFFT');
+    debug('text',3,'Text','Performing Fourier Transform on the input from time to Fourier domain');
     hata = patternFFT(M,a,'Validate',false);
-    debug('time',3,'StopTimer','inputFFT');
 elseif strcmp(p.Results.Input,'Fourier')
     hata = a;
 else
@@ -56,12 +54,10 @@ hatb = 1/abs(det(M))*bracketSums.*hata;
 debug('time',3,'StopTimer','changeBasis');
 if strcmp(p.Results.Output,'time')
     debug('text',3,'Performing inverse Fourier Transform on the output from time to Fourier domain');
-    debug('time',3,'StartTimer','outputFFT');
     b = patternIFFT(M,hatb,'Validate',false);
-    debug('time',3,'StopTimer','outputFFT');
-elseif strcmp(p.Results.Input,'Fourier')
+elseif strcmp(p.Results.Output,'Fourier')
     b = hatb;
 else
-    error('Unknoen domain for the output coefficients b');
+    error('Unknown domain for the output coefficients b');
 end
 end

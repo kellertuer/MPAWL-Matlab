@@ -41,12 +41,14 @@ tmax = getMaxIndex(transpose(M));
 torigin = tmax+1;
 
 coeffsOI = Inf(2*tmax+1);
-summation = nestedFor(zeros(1,dM),epsilon-ones(1,dM));
+summation = nestedFor(zeros(1,dM),epsilon'-ones(1,dM));
+
 % reorder
+debug('time',3,'StartTimer','Generating Fourier coefficients from space coefficients');
 while (summation.hasNext())
     ind = summation.next();
     indc = num2cell(ind'+1);
-    sumIndc = num2cell(modM(ind*hM,transpose(M),'Target','symmetric','Validate',false,'Index',true)'+torigin);
+    sumIndc = num2cell(modM(hM*ind',transpose(M),'Target','symmetric','Validate',false,'Index',true)'+torigin);
     coeffsOI(sumIndc{:}) = hata(indc{:});
 end
 ckf = zeros(size(ckphi));
@@ -57,4 +59,6 @@ while (summation.hasNext())
     sumIndc = num2cell(modM((ind-origin)',transpose(M),'Target','symmetric','Validate',false,'Index',true)'+torigin);
     ckf(indc{:}) = coeffsOI(sumIndc{:})*ckphi(indc{:});
 end
+debug('time',3,'StopTimer','Generating Fourier coefficients from space coefficients');
+
 end
