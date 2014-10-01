@@ -12,9 +12,9 @@ function cmap = rwb(n)
 if nargin==0
     n = 256;
 end
-cmap = [ones(1,ceil(n/2)), (1-mod(n,2)*1/(floor(n/2))):-1/(ceil(n/2)-1):0;...
+cmap = [0:1/(ceil(n/2)-1):1, ones(1,floor(n/2));...
         0:1/(ceil(n/2)-1):1, (1-mod(n,2)*1/(floor(n/2))):-1/(ceil(n/2)-1):0; ...
-        0:1/(ceil(n/2)-1):1, ones(1,floor(n/2))]';
+        ones(1,ceil(n/2)), (1-mod(n,2)*1/(floor(n/2))):-1/(ceil(n/2)-1):0]';
 % cmap = [ones(1,128), 1:-1/127:0; 0:1/127:1, 1:-1/127:0; 0:1/127:1,ones(1,128)]';
 end
 
