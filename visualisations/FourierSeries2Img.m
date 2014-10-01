@@ -1,5 +1,5 @@
-function pixelsimg = discretePlotFourierSeries( resolution, coefficients)
-% discretePlotFourierSeries(resolution, coefficients(, origin))
+function pixelsimg = FourierSeries2Img( resolution, coefficients)
+% FourierSeries2Img(resolution, coefficients(, origin))
 % produce an image or array fom given Fourier coefficients into pixel image
 % of size resolution
 %
@@ -8,7 +8,7 @@ function pixelsimg = discretePlotFourierSeries( resolution, coefficients)
 %   coefficients : Fourier coefficients
 %
 % OUTPUT
-%   pixelsimg    : resulting pixel image (or higher dimensional data).
+%   pixelsimg    : resulting pixel image (or higher dimensional data) rotated, such that the minimal index is bottom left
 %
 % OPTIONAL PARAMETERS
 % ---
@@ -47,6 +47,6 @@ assert(any(size(coefficients)<=resolution),...
     
     % special version of ifftshift - shift the origin to 1,1
     
-    pixelsimg = circshift( fftn(circshift(imgck,-resorigin)), resorigin);
+    pixelsimg = rot90(circshift( fftn(circshift(imgck,-resorigin)), resorigin));
 end
 
