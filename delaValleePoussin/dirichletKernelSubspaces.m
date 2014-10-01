@@ -1,4 +1,4 @@
-function [hata,hatb] = dirichletKernelSubspaces(M,varargin)
+function [hata,hatb] = dirichletKernelSubspaces(M,J,varargin)
 % [hata, hatb] = dirichletKernelSubspaces(M,J)
 % Generate the Dirichlet Kernel complement with respect to % an M-invariant
 % space, where the coefficients are given with respect to a dirichlet

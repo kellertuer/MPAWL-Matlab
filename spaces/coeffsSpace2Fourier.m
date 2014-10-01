@@ -1,5 +1,5 @@
 function ckf = coeffsSpace2Fourier(M,hata,ckphi,origin,varargin)
-% coeffsSpace2Fourier(hata,ckphiorigin,M)
+% coeffsSpace2Fourier(M,hata,ckphi,origin)
 % compute the Fourier coefficients of f, ckf, based on hata, the Fourier
 % transform of its coefficients a wrt the translates T(y)phi, y from the
 % pattern(M). 
@@ -42,7 +42,6 @@ torigin = tmax+1;
 
 coeffsOI = Inf(2*tmax+1);
 summation = nestedFor(zeros(1,dM),epsilon'-ones(1,dM));
-
 % reorder
 debug('time',3,'StartTimer','Generating Fourier coefficients from space coefficients');
 while (summation.hasNext())

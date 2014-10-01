@@ -51,7 +51,7 @@ disp('corresponding function');
 %%
 figure(5);
 n=128;
-imgphiN = 1/abs(det(N))*real(discretePlotFourierSeries(n*[1,1],ckphiN));
+imgphiN = 1/abs(det(N))*real(FourierSeries2Img(n*[1,1],ckphiN));
 %correct axis
 rangeN = max(max(abs(imgphiN)));
 [Xn,Yn] = meshgrid(-pi:2*pi/n:(pi-2*pi/n),-pi:2*pi/n:(pi-2*pi/n));
@@ -64,7 +64,7 @@ ckDN = dirichletKernel(N);
 max3 = (size(ckDN')+1)/2-1;
 figure(6);
 n=128;
-imgDN = 1/abs(det(N))*real(discretePlotFourierSeries(n*[1,1],ckDN));
+imgDN = 1/abs(det(N))*real(FourierSeries2Img(n*[1,1],ckDN));
 %correct axis
 rangeDN = max(max(abs(imgDN)));
 [Xn,Yn] = meshgrid(-pi:2*pi/n:(pi-2*pi/n),-pi:2*pi/n:(pi-2*pi/n));
@@ -86,7 +86,7 @@ disp('To reconstruct, use coeffsSpace2Fourier(N,coeffs[S/W],ckphiN,origin)');
 
 figure(7);
 ckphiSubS = coeffsSpace2Fourier(N,coeffS,ckphiN,(size(ckphiN)+1)/2);
-imgScale = 2/abs(det(N))*real(discretePlotFourierSeries(n*[1,1],ckphiSubS));
+imgScale = 2/abs(det(N))*real(FourierSeries2Img(n*[1,1],ckphiSubS));
 %correct axis
 rangeNS = max(max(abs(imgScale)));
 surf(Xn,Yn,imgScale,'FaceAlpha',.8,'FaceColor','interp','EdgeColor','k','EdgeAlpha',0.2);
@@ -97,7 +97,7 @@ title('Scaling subspace function');
  
 figure(8);
 ckphiSubW = coeffsSpace2Fourier(N,coeffW,ckphiN,(size(ckphiN)+1)/2);
-imgWave = 2/abs(det(N))*real(discretePlotFourierSeries(n*[1,1],ckphiSubW));
+imgWave = 2/abs(det(N))*real(FourierSeries2Img(n*[1,1],ckphiSubW));
 %correct axis
 rangeNW = max(max(abs(imgWave)));
 surf(Xn,Yn,imgWave,'FaceAlpha',.8,'FaceColor','interp','EdgeColor','k','EdgeAlpha',0.2);

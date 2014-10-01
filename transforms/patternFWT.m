@@ -1,4 +1,4 @@
-function [hatf_s,hatf_w] = patternFWT(M,J,phata,phatbS,hatbW,varargin)
+function [hatf_s,hatf_w] = patternFWT(M,J,phata,phatbS,phatbW,varargin)
 % [hatf_s,hatf_w] = patternFWT(M,J,hata, hatbS, hatbW)
 % [hatf_s,hatf_w] = patternFWT(M,J,ckf, ckphi, ckpsi, ckxi, origin)
 % compute the wavelet transform of a function f with respect to a scaling
@@ -39,9 +39,6 @@ p = inputParser;
 addOptional(p,'ckxi',[]);
 addOptional(p,'origin',[]);
 addParamValue(p, 'Validate',true,@(x) islogical(x));
-addParamValue(p, 'File',{});
-addParamValue(p, 'Orthonormalize',true,@(x) islogical(x));
-addParamValue(p, 'Support',[]);
 parse(p, varargin{:});
 pp = p.Results;
 if (pp.Validate)
@@ -71,41 +68,39 @@ else
     hatbS = phatbS;
     hatbW = phatbW;
     if (pp.Validate)
-        assert(all(size(hata)==epsilon),['Coefficients of f are of dimension ',num2str(size(hata)),' but M requires ',num2str(epsilon),'.']);
-        assert(all(size(hatbS)==epsilon),['Coefficients of f are of dimension ',num2str(size(hatbS)),' but M requires ',num2str(epsilon),'.']);
-        assert(all(size(hatbW)==epsilon),['Coefficients of f are of dimension ',num2str(size(hatbW)),' but M requires ',num2str(epsilon),'.']);
+        assert(all(size(hata)==(epsilon')),['Coefficients of f are of dimension ',num2str(size(hata)),' but M requires ',num2str(epsilon'),'.']);
+        assert(all(size(hatbS)==(epsilon')),['Coefficients of f are of dimension ',num2str(size(hatbS)),' but M requires ',num2str(epsilon'),'.']);
+        assert(all(size(hatbW)==(epsilon')),['Coefficients of f are of dimension ',num2str(size(hatbW)),' but M requires ',num2str(epsilon'),'.']);
     end
 end
 debug('text',2,'Text','Performing the Wavelet Transform');
 % Further parameters
-adM = abs(det(M));
 dN = patternDimension(N);
 mu = diag(snf(N)); mu = mu(d-dN+1:d);
 NTg = transpose(N)*generatingSetBasis(transpose(J));
-InvNy = N\patternBasis(patternNormalForm(J));
-hN = generatingSetbasis(transpose(N));
+hN = generatingSetBasis(transpose(N));
 lambdag = generatingSetBasisDecomp(NTg,transpose(M),'Target','symmetric','Validate',false);
 P = zeros(dM,dN);
 for i=1:dN
     P(:,i) = generatingSetBasisDecomp(hN(:,i),transpose(M),'Target','symmetric','Validate',false);
 end
-hatf_s = zeros(mu);
-hatf_w = zeros(mu);
-summation = NestedFor(zeros(1,dN),mu-1);
+hatf_s = zeros(mu');
+hatf_w = zeros(mu');
+summation = nestedFor(zeros(1,dN),mu'-1);
 % Timer Debug.
 debug('time',3,'StartTimer','patternWavelet-Transform');
 while summation.hasNext()
     ind = summation.next();
-    indc = num2cell(ind);
+    indcp1 = num2cell(ind'+1);
     indM = modM(P*(ind'),diag(epsilon));
     indM2 = modM(P*(ind')+lambdag,diag(epsilon));
-    indMc = num2cell(indM);
-    indM2c = num2cell(indM2);
-    hatf_s(indc{:}) = 1/abs(det(J)) * ( ...
-        conj(hatbS(indMc{:}))*hata(indMc{:}) + conj(hatbW(indM2c{:}))*hata(indM2c{:})...
+    indMcp1 = num2cell(indM+1);
+    indM2cp1 = num2cell(indM2+1);
+    hatf_s(indcp1{:}) = 1/abs(det(J)) * ( ...
+        conj(hatbS(indMcp1{:}))*hata(indMcp1{:}) + conj(hatbS(indM2cp1{:}))*hata(indM2cp1{:})...
         );
-    hatf_w(indc{:}) = 1/abs(det(J)) * ( ...
-        conj(hatbW(indMc{:}))*hata(indMc{:}) + conj(hatbW(indM2c{:}))*hata(indM2c{:})...
+    hatf_w(indcp1{:}) = 1/abs(det(J)) * ( ...
+        conj(hatbW(indMcp1{:}))*hata(indMcp1{:}) + conj(hatbW(indM2cp1{:}))*hata(indM2cp1{:})...
         );
 end
 debug('time',3,'StopTimer','patternWavelet-Transform');

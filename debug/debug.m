@@ -58,7 +58,7 @@ function debug(type, level, varargin)
     if ( (getDebugLevel('time')>=level) && (strcmp(type,'time')) )
         if (numel(debugparams.StartTimer)>0)
             if (timers.isKey(debugparams.StartTimer))
-                warning('Key already in use for a running time measurement; ignoring actual start');
+                warning(['Key <',debugparams.StartTimer,'>already in use for a running time measurement; ignoring actual start']);
             else
                 timers = [timers; containers.Map({debugparams.StartTimer},{tic})];
                 debug('text',3,'Text',['Timer started for ',debugparams.StartTimer]);

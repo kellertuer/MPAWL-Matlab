@@ -64,25 +64,25 @@ end
 if ~isempty(FiledlVP)
     debug('text',3,'Text',['Loading coefficients from file',FiledlVP]);
     if exist(FiledlVP,'file')
-        vars = load(FileStr,'M','J','hata');
-        if ( (all(vars.M==M)) &&  (all(vars.J==J)) && (all(size(hata)==epsilon)) )
+        vars = load(FiledlVP,'M','J','hata','orthonormalized');
+        if ( (all(all(vars.M==M))) &&  (all(all(vars.J==J))) && (all(size(hata)==epsilon')) )
             hata = vars.hata;
-            if pp.Orthonormalize
+            if pp.Orthonormalize && ~varsorthonormalized
                 hata = orthogonalizeTranslatesInSpace(hata,M,J,'Validate',false);
             end
         end
-        debug('text',3,'Text',['The specified file ''',FileStr,''' does not contain coefficients for M w.r.t J, will overwrite them.']);
+        debug('text',3,'Text',['The specified file ''',FiledlVP,''' does not contain coefficients for M w.r.t J, will overwrite them.']);
     else
-        debug('text',3,'Text',['The specified file ''',FileStr,''' does not exist yet; trying to write to it']);
+        debug('text',3,'Text',['The specified file ''',FiledlVP,''' does not exist yet; trying to write to it']);
     end
 end
 if ~isempty(FileWav)
-    debug('text',3,'Text',['Loading coefficients from file',FiledlVP]);
-    if exist(FiledlVP,'file')
-        vars = load(FileStr,'M','J','hatb');
-        if ( (all(vars.M==M)) &&  (all(vars.J==J)) && (all(size(vars.hatb)==epsilon)) )
+    debug('text',3,'Text',['Loading coefficients from file',FileWav]);
+    if exist(FileWav,'file')
+        vars = load(FileWav,'M','J','hatb','orthonormalized');
+        if ( (all(all(vars.M==M))) &&  (all(all(vars.J==J))) && (all(size(vars.hatb)==epsilon')) )
             hatb = vars.hatb;
-            if pp.Orthonormalize
+            if pp.Orthonormalize && ~vars.orthonormalized
                 hatb = orthogonalizeTranslatesInSpace(hatb,M,J,'Validate',false);
             end
         end
@@ -106,13 +106,13 @@ elseif (numel(hata)==0) && (numel(hatb)>0) %Compute a from b
     hata = inf(epsilon');
     debug('text',3,'Text','Computing corresponding scaling function as orthogonal compplement of the loaded wavelet function');
     debug('time',3,'StartTimer','computeScalingForthtiming');
-    summation = NestedFor(zeros(1,dM),epsilon'-1);
+    summation = nestedFor(zeros(1,dM),epsilon'-1);
     while(summation.hasNext()) %Can this be done faster?
         ind = summation.next();
-        indcp1 = num2cell(ind+1);
+        indcp1 = num2cell(ind'+1);
         indshift = modM(ind'+lambdag,diag(epsilon),'Validate',false,'Target','unit','Index',true);
         indshiftcp1 = num2cell(indshift+1);
-        hata(indcp1{:}) = exp(-2*pi*1i* (InvNy*(ind*hM)))*hatb(indshiftcp1{:});
+        hata(indcp1{:}) = exp(-2*pi*1i* (InvNy'*(hM*ind')))*hatb(indshiftcp1{:});
     end
     debug('time',3,'StopTimer','computeScalingForthtiming');
 elseif (numel(hata)==0) && (numel(hatb)==0) 
@@ -122,7 +122,7 @@ elseif (numel(hata)==0) && (numel(hatb)==0)
     debug('time',3,'StartTimer','computeScalingFtiming');
     while(summation.hasNext()) %Can this be done faster?
         ind = summation.next();
-        indcp1 = num2cell(ind+1);
+        indcp1 = num2cell(ind'+1);
         x = transpose(N)\modM( hM * ind',transpose(M),'Validate',false,'Target','symmetric');
         hata(indcp1{:}) = 1/abs(det(J))* BnSum(J,g,x);
     end
@@ -134,7 +134,7 @@ debug('time',3,'StartTimer','computeWaveletFtiming');
 summation = nestedFor(zeros(1,dM),epsilon'-1);
 while(summation.hasNext()) %Can this be done faster?
     ind = summation.next();
-    indcp1 = num2cell(ind+1);
+    indcp1 = num2cell(ind'+1);
     indshift = modM(ind'+lambdag,diag(epsilon),'Validate',false,'Target','unit','Index',true);
     indshiftcp1 = num2cell(indshift+1);
     hatb(indcp1{:}) = exp(-2*pi*1i* (InvNy'*(hM*(ind'))) ) * hata(indshiftcp1{:});
@@ -147,14 +147,16 @@ end
 % File savings
 if ~isempty(FiledlVP)
     try
-        save(FiledlVP,'M','J','hata');
+        orthonormalized = pp.Orthonormalize;
+        save(FiledlVP,'M','J','hata','orthonormalized');
     catch err
         warning(['Could not save to file ''',FiledlVP,''', the following error occured: ',err.message]);
     end
 end
 if ~isempty(FileWav)
     try
-        save(FileWav,'M','J','hatb');
+        orthonormalized = pp.Orthonormalize;
+        save(FileWav,'M','J','hatb','orthonormalized');
     catch err
         warning(['Could not save to file ''',FileWav,''', the following error occured: ',err.message]);
     end

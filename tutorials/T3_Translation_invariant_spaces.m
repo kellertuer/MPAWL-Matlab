@@ -50,7 +50,7 @@ patternIFFT(M,ckBSDMIP)'
 
 disp('his can also be visualized, but we have to take the real part only, the imaginary part is of order 10^(-14) only though)');
 figure(2);
-imgDM = 1/abs(det(M))*real(discretePlotFourierSeries(256*[1,1],ckDM));
+imgDM = 1/abs(det(M))*real(FourierSeries2Img(256*[1,1],ckDM));
 %correct axis
 range = max(max(abs(imgDM)));
 imagesc(imgDM,[-range,range]); %unify range of the image in order to have white=middle=zero
@@ -71,7 +71,7 @@ caxis([-rangel,rangel]);
 hold off
 %%
 figure(4);
-imgDMo = 1/abs(det(M))*real(discretePlotFourierSeries(256*[1,1],ckDMorth));
+imgDMo = 1/abs(det(M))*real(FourierSeries2Img(256*[1,1],ckDMorth));
 %correct axis
 range = max(max(abs(imgDMo)));
 imagesc(imgDMo,[-range,range]); %unify range of the image in order to have white=middle=zero
@@ -79,7 +79,7 @@ colormap rwb
 title('Plot of the modified orthonormalized dirichlet Kernel DM(x,y)');
 
 figure(5);
-imgDiff = 1/abs(det(M))*real(discretePlotFourierSeries(256*[1,1],ckDMorth-ckDM));
+imgDiff = 1/abs(det(M))*real(FourierSeries2Img(256*[1,1],ckDMorth-ckDM));
 %correct axis
 range = max(max(abs(imgDiff)));
 imagesc(imgDiff,[-range,range]); %unify range of the image in order to have white=middle=zero

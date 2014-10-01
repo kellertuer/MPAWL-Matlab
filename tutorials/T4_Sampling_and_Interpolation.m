@@ -47,7 +47,7 @@ ckBoxSpline = coeffsSpace2Fourier(M,hata,ckdM,(size(ckdM)+1)/2);
 
 disp('and compare the result with the above, denser sampled first data');
 
-diffImg = real(discretePlotFourierSeries(n*[1,1],ckBoxSpline))-Z;
+diffImg = real(FourierSeries2Img(n*[1,1],ckBoxSpline))-Z;
 dIr = max(max(abs(diffImg)));
 figure(2);
 imagesc(diffImg,[-dIr,dIr]); 
@@ -67,7 +67,7 @@ ckLinear = coeffsSpace2Fourier(M,hata2,ckdM,(size(ckdM)+1)/2);
 
 disp('and plotting the image resembles the Gibbs phenomenon at the borders');
 
-resImg = real(discretePlotFourierSeries(n*[1,1],ckLinear));
+resImg = real(FourierSeries2Img(n*[1,1],ckLinear));
 rIr = max(max(abs(resImg)));
 figure(3);
 imagesc(resImg,[-rIr,rIr]); 
