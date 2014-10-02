@@ -47,7 +47,7 @@ addParamValue(p, 'ImagePrefix','');
 addParamValue(p, 'Plotresolution',2*size(hatdata));
 addParamValue(p, 'SpacePrefix','');
 addParamValue(p, 'Orthonormalize',true,@(x) islogical(x));
-addParamValue(p, 'Levels',length(gs));
+addParamValue(p, 'Levels',length(Js));
 parse(p, varargin{:});
 pp = p.Results;
 
@@ -103,8 +103,8 @@ for i=1:length(lvlmats)
     N = inv(dilationMatrix2D(lvlmats{i}))*M; %#ok<MINV>
     try
         if numel(SpacePre)>0
-            StrScale = [SpacePre,'-',lvlmats{i}];
-            StrWave = [SpacePre,'-',lvlmats{i}];
+            StrScale = [SpacePre,'-',lvlmats{i},'-Scaling'];
+            StrWave = [SpacePre,'-',lvlmats{i},'-Wavelet'];
             [hatS,hatW] = delaValleePoussinSubspaces(g(1),M,dilationMatrix2D(lvlmats{i}),'Validate',false,'File',{[StrScale,'.mat'],[StrWave,'.mat']},'Orthonormalize',Orth);
         else
             [hatS,hatW] = delaValleePoussinSubspaces(g(1),M,dilationMatrix2D(lvlmats{i}),'Validate',false,'Orthonormalize',Orth);
