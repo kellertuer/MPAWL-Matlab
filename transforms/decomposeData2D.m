@@ -179,7 +179,7 @@ for i=1:length(lvlmats)
             newcells = J{2};
             newcells{end+1} = 'Scale';
             newcells{end+1} = 'Wavelet';
-            if numel(ImgPre)>0
+            if numel(SpacePre)>0
                 SpaceNPre = [SpacePre,'-',lvlmats{i}];
             else
                 SpaceNPre = '';

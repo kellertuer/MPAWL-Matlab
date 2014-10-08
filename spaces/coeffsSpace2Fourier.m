@@ -39,25 +39,35 @@ epsilon = epsilon(d-dM+1:d);
 
 tmax = getMaxIndex(transpose(M));
 torigin = tmax+1;
-
-coeffsOI = Inf(2*tmax+1);
-summation = nestedFor(zeros(1,dM),epsilon'-ones(1,dM));
 % reorder
 debug('time',3,'StartTimer','Generating Fourier coefficients from space coefficients');
-while (summation.hasNext())
-    ind = summation.next();
-    indc = num2cell(ind'+1);
-    sumIndc = num2cell(modM(hM*ind',transpose(M),'Target','symmetric','Validate',false,'Index',true)'+torigin);
-    coeffsOI(sumIndc{:}) = hata(indc{:});
-end
 ckf = zeros(size(ckphi));
-summation = nestedFor(ones(size(size(ckphi))),size(ckphi));
-while (summation.hasNext())
-    ind = summation.next();
-    indc = num2cell(ind');
-    sumIndc = num2cell(modM((ind-origin)',transpose(M),'Target','symmetric','Validate',false,'Index',true)'+torigin);
-    ckf(indc{:}) = coeffsOI(sumIndc{:})*ckphi(indc{:});
+if (d==1)
+    ind = 1:length(ckf);
+    gSetInds = generatingSetBasisDecomp(ind-torigin,transpose(M))+1;
+    indc = sub2ind(size(ckf),1:length(ckphi));
+    ckf(indc) = hata(gSetInds).*(ckphi(:)');
+elseif (d==2)
+    [ind1,ind2] = meshgrid(1:size(ckf,1),1:size(ckf,2));
+    gSetInds = generatingSetBasisDecomp([ind1(:)';ind2(:)']-repmat(origin',[1,numel(ckf)]),transpose(M),'Validate',false)+1;
+    [ind1c,ind2c] = meshgrid(1:size(ckphi,1),1:size(ckphi,2));
+    ckf(sub2ind(size(ckf),ind1c(:)'-origin(1)+torigin(1),ind2c(:)'-origin(1)+torigin(1))) = hata(sub2ind(size(hata),gSetInds(1,:),gSetInds(2,:))).*(ckphi(:)');
+else %for higher dimensions i only now the slow (mathematica style) way of nested fors
+    coeffsOI = Inf(2*tmax+1);
+    summation = nestedFor(zeros(1,dM),epsilon'-ones(1,dM));
+    while (summation.hasNext())
+        ind = summation.next();
+        indc = num2cell(ind'+1);
+        sumIndc = num2cell(modM(hM*ind',transpose(M),'Target','symmetric','Validate',false,'Index',true)'+torigin);
+        coeffsOI(sumIndc{:}) = hata(indc{:});
+    end
+    summation = nestedFor(ones(size(size(ckphi))),size(ckphi));
+    while (summation.hasNext())
+        ind = summation.next();
+        indc = num2cell(ind');
+        sumIndc = num2cell(modM((ind-origin)',transpose(M),'Target','symmetric','Validate',false,'Index',true)'+torigin);
+        ckf(indc{:}) = coeffsOI(sumIndc{:})*ckphi(indc{:});
+    end
 end
 debug('time',3,'StopTimer','Generating Fourier coefficients from space coefficients');
-
 end

@@ -4,7 +4,8 @@ function v = generatingSetBasisDecomp(k,M,varargin)
 % k = modM(V.v,M), where V = geteratingSetBasis(M)
 %
 % INPUT
-%   k : the integer vector (dimension d) that is to be decomposed
+%   k : the integer vector (dimension d) that is to be decomposed, or a
+%   matrix consisting of columns of ks to be decomposed.
 %   M : the integer matrix (d times d) for the generating set
 %
 % OUTPUT
@@ -33,7 +34,7 @@ parse(p, varargin{:});
 if (p.Results.Validate)
     isMatrixValid(M);
 end
-assert(isvector(k),'The input k has to be a vector');
+% assert(isvector(k),'The input k has to be a vector');
 if isrow(k)
     vk = k';
 else
@@ -43,5 +44,5 @@ d = size(M,1);
 dM = patternDimension(transpose(M));
 [~,S,V] = snf(transpose(M));
 v = modM(transpose(V)*vk,S,'Target',p.Results.Target);
-v = v(d-dM+1:d);
+v(d-dM+1:d,:);% v = v(d-dM+1:d);
 end
