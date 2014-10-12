@@ -70,8 +70,9 @@ if ~isempty(FiledlVP)
             if pp.Orthonormalize && ~varsorthonormalized
                 hata = orthogonalizeTranslatesInSpace(hata,M,J,'Validate',false);
             end
+        else
+            debug('text',3,'Text',['The specified file ''',FiledlVP,''' does not contain coefficients for M w.r.t J, will overwrite them.']);
         end
-        debug('text',3,'Text',['The specified file ''',FiledlVP,''' does not contain coefficients for M w.r.t J, will overwrite them.']);
     else
         debug('text',3,'Text',['The specified file ''',FiledlVP,''' does not exist yet; trying to write to it']);
     end
@@ -85,8 +86,9 @@ if ~isempty(FileWav)
             if pp.Orthonormalize && ~vars.orthonormalized
                 hatb = orthogonalizeTranslatesInSpace(hatb,M,J,'Validate',false);
             end
+        else
+           debug('text',3,'Text',['The specified file ''',FileWav,''' does not contain coefficients for M wrt. J, will overwrite them.']);
         end
-        debug('text',3,'Text',['The specified file ''',FileWav,''' does not contain coefficients for M wrt. J, will overwrite them.']);
     else
         debug('text',3,'Text',['The specified file ''',FileWav,''' does not exist yet; trying to write to it']);
     end
@@ -95,11 +97,6 @@ NTg = transpose(N)*generatingSetBasis(transpose(J));
 InvNy = N\patternBasis(patternNormalForm(J));
 hN = generatingSetBasis(transpose(N));
 lambdag = round(generatingSetBasisDecomp(NTg,transpose(M),'Target','symmetric','Validate',false));
-P = zeros(dM,dN);
-for i=1:dN
-    P(:,i) = generatingSetBasisDecomp(hN(:,i),transpose(M),'Target','symmetric','Validate',false);
-end
-P = round(P);
 if (numel(hata)>0) && (numel(hatb)>0) %both successfully loaded
     return
 elseif (numel(hata)==0) && (numel(hatb)>0) %Compute a from b
@@ -147,7 +144,7 @@ end
 % File savings
 if ~isempty(FiledlVP)
     try
-        orthonormalized = pp.Orthonormalize;
+        orthonormalized = pp.Orthonormalize; %#ok<NASGU>
         save(FiledlVP,'M','J','hata','orthonormalized');
     catch err
         warning(['Could not save to file ''',FiledlVP,''', the following error occured: ',err.message]);
@@ -155,7 +152,7 @@ if ~isempty(FiledlVP)
 end
 if ~isempty(FileWav)
     try
-        orthonormalized = pp.Orthonormalize;
+        orthonormalized = pp.Orthonormalize; %#ok<NASGU>
         save(FileWav,'M','J','hatb','orthonormalized');
     catch err
         warning(['Could not save to file ''',FileWav,''', the following error occured: ',err.message]);
