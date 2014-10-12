@@ -87,4 +87,4 @@ disp('But we will use the multilevel approach this time, even only for one level
 decomposeData2D(1/8,{{'X'}},M,cdata2,'ImageOutput','Both')
 %%
 disp('But it is also possible to perform more than one decomposition and to save/load coefficients and images');
-decomposeData2D(1/14*ones(1,6),{{'D'},{'Y'},{'Y'},{'Y'},{'Z'}},M,cdata2,'ImageOutput','Both','ImagePrefix','tutorials/T6-files/img','SpacePrefix','tutorials/T6-files/space')
+decomposeData2D(1/14*ones(1,6),{{'D'},{'Y'},{'Y'},{'Y'},{'X'}},M,cdata2,'ImageOutput','Both','ImagePrefix','tutorials/T6-files/img','SpacePrefix','tutorials/T6-files/space')
