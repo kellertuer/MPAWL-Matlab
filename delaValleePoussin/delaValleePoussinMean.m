@@ -104,32 +104,42 @@ if isa(g,'function_handle')
     torigin = tmax+1;
     debug('text',3,'Text','Computing de la Vallée Poussin scaling function');
     ckphi = zeros(2*tmax+1);
-    summation = nestedFor(ones(1,d),2*tmax+1);
-    while(summation.hasNext()) %faster?
-        ind = summation.next();
-        indcp1 = num2cell(ind'+1);
-%       ckphi(indcp1{:}) = 1/adM*g(transpose(M)\(ind'-torigin'));
-%       %Mathematica FFT version
-        ckphi(indcp1{:}) = g(transpose(M)\(ind'-torigin'));
+    griddims = cell(1,d);
+    for i=1:dM
+        griddims{i} = 1:(2*tmax(i)+1);
     end
+    gridmeshes = cell(1,d);
+    [gridmeshes{:}] = ndgrid(griddims{:});
+    inds = zeros(dM,numel(ckphi));
+    for i=1:d
+        inds(i,:) = reshape(gridmeshes{i},1,[]);
+    end
+    indsc = cell(1,d);
+    for i=1:d
+        indsc{i} = inds(i,:);
+    end
+    ckphi(sub2ind(size(ckphi),indsc{:})) = g(transpose(M)\(inds-repmat(torigin,[1,numel(ckphi)])));
 elseif isvector(g)
     ind = max(1+2*g,pp.Support*ones(size(g)));
     tmax = getMaxIndex(transpose(M),'Target','symetric','Cube',ind)+1; %+1 for security
     torigin = tmax+1;
-    debug('text',3,'Text','Computing de la Vallée Poussin scaling function');
     ckphi = zeros(2*tmax+1);
-    summation = nestedFor(ones(1,d),2*tmax+1);
-    while(summation.hasNext()) %Can this be done faster?
-        ind = summation.next();
-        indcp1 = num2cell(ind');
-        v = 1;
-        p = transpose(M)\(ind'-torigin');
-        for j=1:d
-            v = v * pyramidFunction(g(j),p(j));
-        end
-%        ckphi(indc{:}) = 1/adM*v; %Mathematica, other FFT factors
-        ckphi(indcp1{:}) = v;
+    debug('text',3,'Text','Computing de la Vallée Poussin scaling function');
+    griddims = cell(1,d);
+    for i=1:d
+        griddims{i} = 1:(2*tmax(i)+1);
     end
+    gridmeshes = cell(1,d);
+    [gridmeshes{:}] = ndgrid(griddims{:});
+    inds = zeros(d,numel(ckphi));
+    for i=1:d
+        inds(i,:) = reshape(gridmeshes{i},1,[]);
+    end
+    indsc = cell(1,d);
+    for i=1:d
+        indsc{i} = inds(i,:);
+    end
+    ckphi(sub2ind(size(ckphi),indsc{:})) = pyramidFunction(g,transpose(M)\(inds-repmat(torigin',[1,numel(ckphi)])));
 else
     error('Unknown input type g');
 end

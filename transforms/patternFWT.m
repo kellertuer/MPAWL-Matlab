@@ -88,7 +88,7 @@ hatf_s = zeros(mu');
 hatf_w = zeros(mu');
 summation = nestedFor(zeros(1,dN),mu'-1);
 % Timer Debug.
-debug('time',3,'StartTimer','patternWavelet-Transform');
+debug('time',3,'StartTimer','performing the wavelet transform on a pattern');
 while summation.hasNext()
     ind = summation.next();
     indcp1 = num2cell(ind'+1);
@@ -103,5 +103,5 @@ while summation.hasNext()
         conj(hatbW(indMcp1{:}))*hata(indMcp1{:}) + conj(hatbW(indM2cp1{:}))*hata(indM2cp1{:})...
         );
 end
-debug('time',3,'StopTimer','patternWavelet-Transform');
+debug('time',3,'StopTimer','performing the wavelet transform on a pattern');
 end
