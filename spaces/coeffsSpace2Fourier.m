@@ -36,33 +36,31 @@ d = size(M,1);
 dM = patternDimension(M);
 epsilon = diag(snf(M));
 epsilon = epsilon(d-dM+1:d);
+if (pp.Validate)
+    assert(all(size(hata)==epsilon'),['The coefficient array hata (',...
+        num2str(size(hata)),') is not of the correct size with respect to the cycles of M (',...
+        num2str(epsilon')]);
+end
 % reorder
 debug('time',3,'StartTimer','Generating Fourier coefficients from space coefficients');
 ckf = zeros(size(ckphi));
-if (d==1)
-    ind = 1:length(ckf);
-    gSetInds = generatingSetBasisDecomp(ind-torigin,transpose(M))+1;
-    ckf(sub2ind(size(ckf),1:length(ckphi))) = hata(gSetInds).*(ckphi(sub2ind(size(ckf),1:length(ckphi))));
-elseif (d==2)
-    [ind1,ind2] = meshgrid(1:size(ckf,1),1:size(ckf,2));
-    gSetInds = generatingSetBasisDecomp([ind1(:)';ind2(:)']-repmat(origin',[1,numel(ckf)]),transpose(M),'Validate',false)+1;
-    ckf(sub2ind(size(ckf),ind1(:)',ind2(:)')) = hata(sub2ind(size(hata),gSetInds(1,:),gSetInds(2,:))).*(ckphi(sub2ind(size(ckf),ind1(:)',ind2(:)')));
-else %for higher dimensions i only now the slow (mathematica style) way of nested fors
-    coeffsOI = Inf(2*tmax+1);
-    summation = nestedFor(zeros(1,dM),epsilon'-ones(1,dM));
-    while (summation.hasNext())
-        ind = summation.next();
-        indc = num2cell(ind'+1);
-        sumIndc = num2cell(modM(hM*ind',transpose(M),'Target','symmetric','Validate',false,'Index',true)'+torigin);
-        coeffsOI(sumIndc{:}) = hata(indc{:});
-    end
-    summation = nestedFor(ones(size(size(ckphi))),size(ckphi));
-    while (summation.hasNext())
-        ind = summation.next();
-        indc = num2cell(ind');
-        sumIndc = num2cell(modM((ind-origin)',transpose(M),'Target','symmetric','Validate',false,'Index',true)'+torigin);
-        ckf(indc{:}) = coeffsOI(sumIndc{:})*ckphi(indc{:});
-    end
+griddims = cell(1,d);
+for i=1:d
+    griddims{i} = 1:size(ckf,i);
 end
+gridmeshes = cell(1,d);
+[gridmeshes{:}] = ndgrid(griddims{:});
+inds = zeros(d,numel(ckf));
+for i=1:d
+    inds(i,:) = reshape(gridmeshes{i},1,[]);
+end
+    gSetInds = generatingSetBasisDecomp(inds-repmat(origin',[1,numel(ckf)]),transpose(M),'Validate',false)+1;
+gSetIndsc = cell(1,d);
+indsc = cell(1,d);
+for i=1:d
+    gSetIndsc{i} = gSetInds(i,:);
+    indsc{i} = inds(i,:);
+end
+ckf(sub2ind(size(ckf),indsc{:})) = hata(sub2ind(size(hata),gSetIndsc{:})).*ckphi(sub2ind(size(ckf),indsc{:}));
 debug('time',3,'StopTimer','Generating Fourier coefficients from space coefficients');
 end
