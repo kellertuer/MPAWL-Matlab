@@ -42,7 +42,7 @@ disp('we can perform a change of basis from the interpolating basis (points from
 hata = changeBasis(M,data,dMBS,'Input','time','Output','Fourier');
 
 disp('And reconstruct its Fourier coefficients');
-
+%%
 ckBoxSpline = coeffsSpace2Fourier(M,hata,ckdM,(size(ckdM)+1)/2);
 
 disp('and compare the result with the above, denser sampled first data');

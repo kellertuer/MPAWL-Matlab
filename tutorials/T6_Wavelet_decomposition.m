@@ -29,7 +29,7 @@ colormap rwb
 caxis([-bsr,bsr]);
 title('Box Spline we will sample');
 %%
-M = 128*[1,0;0,1]
+M = n/2*[1,0;0,1]
 data = sample(M,@(x)(box_eval(Xi,nu,x+ones(length(x),1)*ct')),...
     'SamplingMethod','point row','File','tutorials/T6-files/sampleBoxSpline.mat');
 
@@ -41,7 +41,7 @@ cdata = changeBasis(M,data,dMBS,'Output','Fourier');
 ckdata = coeffsSpace2Fourier(M,cdata,ckdM,origin);
 
 figure(2);
-imgSamples = real(FourierSeries2Img([256,256],ckdata) );
+imgSamples = real(FourierSeries2Img([n,n],ckdata) );
 rIr = max(max(abs(imgSamples)));
 imagesc(imgSamples,[-rIr,rIr]); 
 colormap rwb
@@ -58,7 +58,7 @@ ckDXw = coeffsSpace2Fourier(M,CoeffsDXw,ckdM,origin);
 %%
 ckDataXS = coeffsSpace2Fourier(round(inv(dilationMatrix2D(matStr))*M),cdataXS,ckDXs,origin);
 figure(3);
-imgSamplesS = real( FourierSeries2Img([256,256],ckDataXS) );
+imgSamplesS = real( FourierSeries2Img([n,n],ckDataXS) );
 rIr = max(max(abs(imgSamplesS)));
 imagesc(imgSamplesS,[-rIr,rIr]); 
 colormap rwb
@@ -68,7 +68,7 @@ axis square
 
 ckDataXW = coeffsSpace2Fourier(round(inv(dilationMatrix2D(matStr))*M),cdataXW,ckDXw,origin);
 figure(4);
-imgSamplesW = real( FourierSeries2Img([256,256],ckDataXW) );
+imgSamplesW = real( FourierSeries2Img([n,n],ckDataXW) );
 rIr = max(max(abs(imgSamplesW)));
 imagesc(imgSamplesW,[-rIr,rIr]); 
 colormap rwb
@@ -81,13 +81,10 @@ disp(' The localization of the edges is not that good using the dirichlet kernel
 
 [ckdlVPM,dlVPMBS] = delaValleePoussinMean(1/8,M,'File',{'tutorials/T6-files/ckdlVPM.mat','tutorials/T6-files/ckdlVPM-BS.mat'});
 origin2 = (size(ckdlVPM)+1)/2;
-
 cdata2 = changeBasis(M,data,dlVPMBS,'Output','Fourier');
 
 disp('But we will use the multilevel approach this time, even only for one level: decomposeData2D');
-
 decomposeData2D(1/8,{{'X'}},M,cdata2,'ImageOutput','Both')
-
+%%
 disp('But it is also possible to perform more than one decomposition and to save/load coefficients and images');
-
-decomposeData2D(1/10*ones(1,6),{{'D'},{'X'},{'X'},{'X'},{'Y'}},M,cdata2,'ImageOutput','Both','ImagePrefix','tutorials/T6-files/img','SpacePrefix','tutorials/T6-files/space');
+decomposeData2D(1/14*ones(1,6),{{'D'},{'Y'},{'Y'},{'Y'},{'Z'}},M,cdata2,'ImageOutput','Both','ImagePrefix','tutorials/T6-files/img','SpacePrefix','tutorials/T6-files/space')
