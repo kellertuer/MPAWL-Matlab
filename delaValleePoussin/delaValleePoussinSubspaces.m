@@ -49,7 +49,6 @@ hata = []; hatb = [];
 d = size(M,2);
 assert(det(M) == det(N)*det(J),'N = inv(J)M hast to be integer valued');
 dM = patternDimension(M);
-dN = patternDimension(N);
 hM = generatingSetBasis(transpose(M));
 epsilon = diag(snf(M)); epsilon = epsilon(d-dM+1:d);
 assert( ( isvector(g) || isa(g,'function_handle')),... %neither vector nor function
@@ -95,48 +94,74 @@ if ~isempty(FileWav)
 end
 NTg = transpose(N)*generatingSetBasis(transpose(J));
 InvNy = N\patternBasis(patternNormalForm(J));
-hN = generatingSetBasis(transpose(N));
 lambdag = round(generatingSetBasisDecomp(NTg,transpose(M),'Target','symmetric','Validate',false));
 if (numel(hata)>0) && (numel(hatb)>0) %both successfully loaded
     return
 elseif (numel(hata)==0) && (numel(hatb)>0) %Compute a from b
     hata = inf(epsilon');
     debug('text',3,'Text','Computing corresponding scaling function as orthogonal compplement of the loaded wavelet function');
-    debug('time',3,'StartTimer','computeScalingForthtiming');
-    summation = nestedFor(zeros(1,dM),epsilon'-1);
-    while(summation.hasNext()) %Can this be done faster?
-        ind = summation.next();
-        indcp1 = num2cell(ind'+1);
-        indshift = modM(ind'+lambdag,diag(epsilon),'Validate',false,'Target','unit','Index',true);
-        indshiftcp1 = num2cell(indshift+1);
-        hata(indcp1{:}) = exp(-2*pi*1i* (InvNy'*(hM*ind')))*hatb(indshiftcp1{:});
+    debug('time',3,'StartTimer','Generating the scaling function from the loaded wavelet');
+    griddims = cell(1,dM);
+    for i=1:dM
+        griddims{i} = 1:epsilon(i);
     end
-    debug('time',3,'StopTimer','computeScalingForthtiming');
+    gridmeshes = cell(1,dM);
+    [gridmeshes{:}] = ndgrid(griddims{:});
+    inds = zeros(dM,prod(epsilon));
+    for i=1:dM
+        inds(i,:) = reshape(gridmeshes{i},1,[]);
+    end
+    indsshift = modM((inds-1) + repmat(lambdag,[1,prod(epsilon)]),diag(epsilon),'Validate',false,'Target','unit','Index',true)+1;
+    indsc = cell(1,dM);
+    indsshiftc = cell(1,dM);
+    for i=1:dM
+        indsc{i} = inds(i,:);
+        indsshiftc{i} = indsshift(i,:);
+    end
+    hata(sub2ind(size(hata),indsc{:})) = exp(-2*pi*1i* (InvNy'*(hM*(inds-1)))).*hatb(sub2ind(size(hata),indsshiftc{:}));
+    debug('time',3,'StopTimer','Generating the scaling function from the loaded wavelet');
 elseif (numel(hata)==0) && (numel(hatb)==0) 
-    hata = inf(epsilon');
-    summation = nestedFor(zeros(1,dM),epsilon'-1);
-    debug('text',3,'Text','Computing de la Vallée Poussin scaling function');
-    debug('time',3,'StartTimer','computeScalingFtiming');
-    while(summation.hasNext()) %Can this be done faster?
-        ind = summation.next();
-        indcp1 = num2cell(ind'+1);
-        x = transpose(N)\modM( hM * ind',transpose(M),'Validate',false,'Target','symmetric');
-        hata(indcp1{:}) = 1/abs(det(J))* BnSum(J,g,x);
+    hata = zeros(epsilon');
+    debug('time',3,'StartTimer','Computing de la Vallée Poussin scaling function');
+    griddims = cell(1,dM);
+    for i=1:dM
+        griddims{i} = 1:epsilon(i);
     end
-    debug('time',3,'StopTimer','computeScalingFtiming');
+    gridmeshes = cell(1,dM);
+    [gridmeshes{:}] = ndgrid(griddims{:});
+    inds = zeros(dM,prod(epsilon));
+    for i=1:dM
+        inds(i,:) = reshape(gridmeshes{i},1,[]);
+    end
+    indsc = cell(1,dM);
+    for i=1:d
+        indsc{i} = inds(i,:);
+    end
+    x = transpose(N)\modM( hM * (inds-1),transpose(M),'Validate',false,'Target','symmetric');
+    hata(sub2ind(size(hata),indsc{:})) = 1/abs(det(J))* BnSum(J,g,x);
+    debug('time',3,'StopTimer','Computing de la Vallée Poussin scaling function');
 end %now only hatb might still be 0, but the general wavelet is now computed
-hatb = inf(epsilon');
-debug('text',3,'Text','Computing corresponding Wavelet function');
-debug('time',3,'StartTimer','computeWaveletFtiming');
-summation = nestedFor(zeros(1,dM),epsilon'-1);
-while(summation.hasNext()) %Can this be done faster?
-    ind = summation.next();
-    indcp1 = num2cell(ind'+1);
-    indshift = modM(ind'+lambdag,diag(epsilon),'Validate',false,'Target','unit','Index',true);
-    indshiftcp1 = num2cell(indshift+1);
-    hatb(indcp1{:}) = exp(-2*pi*1i* (InvNy'*(hM*(ind'))) ) * hata(indshiftcp1{:});
-end
-debug('time',3,'StopTimer','computeWaveletFtiming');
+hatb = zeros(epsilon');
+debug('time',3,'StartTimer','Computing corresponding Wavelet function');
+    griddims = cell(1,dM);
+    for i=1:dM
+        griddims{i} = 1:epsilon(i);
+    end
+    gridmeshes = cell(1,dM);
+    [gridmeshes{:}] = ndgrid(griddims{:});
+    inds = zeros(dM,prod(epsilon));
+    for i=1:dM
+        inds(i,:) = reshape(gridmeshes{i},1,[]);
+    end
+    indsshift = modM((inds-1) + repmat(lambdag,[1,prod(epsilon)]),diag(epsilon),'Validate',false,'Target','unit','Index',true)+1;
+    indsc = cell(1,dM);
+    indsshiftc = cell(1,dM);
+    for i=1:dM
+        indsc{i} = inds(i,:);
+        indsshiftc{i} = indsshift(i,:);
+    end
+    hatb(sub2ind(size(hatb),indsc{:})) = exp(-2*pi*1i* (InvNy'*(hM*(inds-1)))).*hata(sub2ind(size(hata),indsshiftc{:}));
+debug('time',3,'StopTimer','Computing corresponding Wavelet function');
 if pp.Orthonormalize
     hata = orthTranslatesInSpace(hata,M,J,'Validate',false);
     hatb = orthTranslatesInSpace(hatb,M,J,'Validate',false);
@@ -167,9 +192,9 @@ summation = nestedFor(-2*zeros(1,d),2*zeros(1,d));
 while(summation.hasNext()) %Can this be done faster?
     p = summation.next()';
     if ~isa(g,'function_handle')
-        s = s+pyramidFunction(g,x+transpose(J)*p);
+        s = s+pyramidFunction(g,x+repmat(transpose(J)*p,[1,size(x,2)]));
     else %function handle by previous verification
-        s = s+g(x+transpose(J)*p);
+        s = s+g(x+repmat(transpose(J)*p,[1,size(x,2)]));
     end
 end
 end

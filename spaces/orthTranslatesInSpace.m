@@ -43,7 +43,6 @@ dM = patternDimension(M);
 dN = patternDimension(N);
 debug('text',2,'Text','Orthonormalizing Coefficients...');
 epsilon = diag(snf(M)); epsilon = epsilon(d-dM+1:d);
-mu = diag(snf(N)); mu = mu(d-dN+1:d);
 NTg = transpose(N)*generatingSetBasis(transpose(J),'Target','unit');
 hN = generatingSetBasis(transpose(N));
 lambdag = round(generatingSetBasisDecomp(NTg,transpose(M),'Target','symmetric','Validate',false));
@@ -63,8 +62,8 @@ inds = zeros(dM,prod(epsilon));
 for i=1:dM
     inds(i,:) = reshape(gridmeshes{i},1,[]);
 end
-indMs = modM(P*inds,diag(epsilon),'Index',true)+1;
-indMs2 = modM(P*inds + repmat(lambdag,[1,size(inds,2)]),diag(epsilon),'Index',true)+1;
+indMs = modM(P*(inds-1),diag(epsilon),'Index',true)+1;
+indMs2 = modM(P*(inds-1) + repmat(lambdag,[1,size(inds,2)]),diag(epsilon),'Index',true)+1;
 indMsc = cell(1,d);
 indMs2c = cell(1,d);
 for i=1:d
