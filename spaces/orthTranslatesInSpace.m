@@ -52,19 +52,28 @@ for i=1:dN
     P(:,i) = generatingSetBasisDecomp(hN(:,i),transpose(M),'Target','symmetric','Validate',false);
 end
 P = round(P);
-hatb = inf(epsilon');
-summation = nestedFor(zeros(1,dN),mu'-1);
-% Timer Debug.
-debug('time',3,'StartTimer','orthogonalizeInTranslatestiming');
-while summation.hasNext()
-    ind = summation.next();
-    indM = modM(P*(ind'),diag(epsilon),'Index',true)';
-    indM2 = modM(P*(ind')+lambdag,diag(epsilon),'Index',true)';
-    indMcp1 = num2cell(indM+1);
-    indM2cp1 = num2cell(indM2'+1);
-    actBSq = abs(hata(indMcp1{:}))^2 + abs(hata(indM2cp1{:}))^2;
-    assert(actBSq ~= 0,'The translates of phi are not linearly independent w.r.t pattern(N)');
-    hatb(indMcp1{:}) = hata(indMcp1{:})*sqrt(abs(det(J))/actBSq);
-    hatb(indM2cp1{:}) = hata(indM2cp1{:})*sqrt(abs(det(J))/actBSq);
+debug('time',3,'StartTimer','orthogonalization of a functon in space coeffiecients');
+griddims = cell(1,dM);
+for i=1:dM
+    griddims{i} = 1:epsilon(i);
 end
-debug('time',3,'StopTimer','orthogonalizeInTranslatestiming');
+gridmeshes = cell(1,dM);
+[gridmeshes{:}] = ndgrid(griddims{:});
+inds = zeros(dM,prod(epsilon));
+for i=1:dM
+    inds(i,:) = reshape(gridmeshes{i},1,[]);
+end
+indMs = modM(P*inds,diag(epsilon),'Index',true)+1;
+indMs2 = modM(P*inds + repmat(lambdag,[1,size(inds,2)]),diag(epsilon),'Index',true)+1;
+indMsc = cell(1,d);
+indMs2c = cell(1,d);
+for i=1:d
+    indMsc{i} = indMs(i,:);
+    indMs2c{i} = indMs2(i,:);
+end
+allSq = abs(hata(sub2ind(size(hata),indMsc{:}))).^2 + abs(hata(sub2ind(size(hata),indMs2c{:}))).^2;
+assert(all(allSq(:)~=0),'The translates of phi are not linearly independent w.r.t pattern(N)');
+hatb = zeros(epsilon');
+hatb(sub2ind(size(hatb),indMsc{:})) = 1/abs(det(J)) * hata(sub2ind(size(hata),indMsc{:}))./allSq;
+hatb(sub2ind(size(hatb),indMs2c{:})) = 1/abs(det(J)) * hata(sub2ind(size(hata),indMs2c{:}))./allSq;
+debug('time',3,'StopTimer','orthogonalization of a functon in space coeffiecients');
