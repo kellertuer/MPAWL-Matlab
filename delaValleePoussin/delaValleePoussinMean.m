@@ -60,9 +60,9 @@ if ~isempty(FileStr)
                 ckphi = coeffsSpace2Fourier(M,1./(sqrt(ckBSq)),ckphi,torigin,'Validate',false);
             end
         end
-        debug('text',3,'Text',['The specified file ''',FileStr,''' does not contain coefficients for M, will overwrite them.']);
+        debug('text',3,'Text',['The specified file ''',FileStr,''' does not contain coefficients for M, they will be replaced.']);
     else
-        debug('text',3,'Text',['The specified file ''',FileStr,''' does not exist yet; trying to write to it']);
+        debug('text',3,'Text',['The specified file ''',FileStr,''' does not exist yet.']);
     end
 end
 if ~isempty(BSStr)
@@ -75,9 +75,9 @@ if ~isempty(BSStr)
                 return;
             end
         end
-        debug('text',3,'Text',['The specified file ''',BSStr,''' does not contain Bracket sums for M, will overwrite them.']);
+        debug('text',3,'Text',['The specified file ''',BSStr,''' does not contain Bracket sums for M, they will be replaced.']);
     else
-        debug('text',3,'Text',['The specified file ''',BSStr,''' does not exist yet; trying to write to it']);
+        debug('text',3,'Text',['The specified file ''',BSStr,''' does not exist yet.']);
         if ~isempty(ckphi)
             torigin = (size(ckphi)-1)/2;
             BSums = bracketSums(ckphi,torigin,M,'Validate',false);

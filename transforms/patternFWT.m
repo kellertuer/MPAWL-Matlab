@@ -86,22 +86,35 @@ for i=1:dN
 end
 hatf_s = zeros(mu');
 hatf_w = zeros(mu');
-summation = nestedFor(zeros(1,dN),mu'-1);
-% Timer Debug.
+% summation = nestedFor(zeros(1,dN),mu'-1);
 debug('time',3,'StartTimer','performing the wavelet transform on a pattern');
-while summation.hasNext()
-    ind = summation.next();
-    indcp1 = num2cell(ind'+1);
-    indM = modM(P*(ind'),diag(epsilon));
-    indM2 = modM(P*(ind')+lambdag,diag(epsilon));
-    indMcp1 = num2cell(indM+1);
-    indM2cp1 = num2cell(indM2+1);
-    hatf_s(indcp1{:}) = 1/abs(det(J)) * ( ...
-        conj(hatbS(indMcp1{:}))*hata(indMcp1{:}) + conj(hatbS(indM2cp1{:}))*hata(indM2cp1{:})...
-        );
-    hatf_w(indcp1{:}) = 1/abs(det(J)) * ( ...
-        conj(hatbW(indMcp1{:}))*hata(indMcp1{:}) + conj(hatbW(indM2cp1{:}))*hata(indM2cp1{:})...
-        );
+griddims = cell(1,dN);
+for i=1:d
+    griddims{i} = 1:mu(i);
 end
+gridmeshes = cell(1,dN);
+[gridmeshes{:}] = ndgrid(griddims{:});
+inds = zeros(d,prod(mu));
+for i=1:dN
+    inds(i,:) = reshape(gridmeshes{i},1,[]);
+end
+indsM = modM(P*(inds-1),diag(epsilon))+1;
+indsM2 = modM(P*(inds-1)+repmat(lambdag,[1,prod(mu)]),diag(epsilon))+1;
+indsMc = cell(1,dN);
+indsM2c = cell(1,dN);
+indsc = cell(1,dN);
+for i=1:d
+    indsc{i} = inds(i,:);
+    indsMc{i} = indsM(i,:);
+    indsM2c{i} = indsM2(i,:);
+end
+hatf_s(sub2ind(size(hatf_s),indsc{:})) = 1/abs(det(J)) * ( ...
+        conj(hatbS(sub2ind(size(hatbS),indsMc{:}))).*hata(sub2ind(size(hata),indsMc{:}))...
+        + conj(hatbS(sub2ind(size(hatbS),indsM2c{:}))).*hata(sub2ind(size(hata),indsM2c{:}))...
+        );
+hatf_w(sub2ind(size(hatf_w),indsc{:})) = 1/abs(det(J)) * ( ...
+        conj(hatbW(sub2ind(size(hatbW),indsMc{:}))).*hata(sub2ind(size(hata),indsMc{:}))...
+        + conj(hatbW(sub2ind(size(hatbW),indsM2c{:}))).*hata(sub2ind(size(hata),indsM2c{:}))...
+        );
 debug('time',3,'StopTimer','performing the wavelet transform on a pattern');
 end
