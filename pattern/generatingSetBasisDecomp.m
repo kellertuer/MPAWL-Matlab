@@ -44,5 +44,5 @@ d = size(M,1);
 dM = patternDimension(transpose(M));
 [~,S,V] = snf(transpose(M));
 v = modM(transpose(V)*vk,S,'Target',p.Results.Target);
-v(d-dM+1:d,:);% v = v(d-dM+1:d);
+v = v(d-dM+1:d,:);% v = v(d-dM+1:d);
 end

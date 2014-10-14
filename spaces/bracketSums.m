@@ -40,36 +40,26 @@ dM = patternDimension(M);
 epsilon = diag(snf(M));
 epsilon = epsilon(d-dM+1:d);
 %Compute maximal values
-tmax = getMaxIndex(transpose(M));
-torigin = tmax+1;
-sums = zeros(2*tmax+1);
 %run over all indices of data
 debug('time',3,'StartTimer','the Bracket Sum');
-summation = nestedFor(ones(1,size(size(data),2)),size(data));
-while summation.hasNext()
-    index = summation.next();
-    epsMod = num2cell(modM((index-origin)',transpose(M),'Target','symmetric','Index',true)'+torigin);
-    index = num2cell(index');
-    if strcmp(pp.Compute,'absolute Squares')
-        sums(epsMod{:}) = sums(epsMod{:}) + abs(data(index{:}))^2;
-    else % else default: brackets
-        sums(epsMod{:}) = sums(epsMod{:}) + data(index{:});
-    end
+griddims = cell(1,d);
+for i=1:d
+    griddims{i} = 1:size(data,i);
 end
-% put result in right circle order
-if (sum(size(epsilon))==2) % one cycle
-    hatb = zeros(1,epsilon);
-else
-    epsc = num2cell(epsilon');
-    hatb = zeros(epsc{:});
+gridmeshes = cell(1,d);
+[gridmeshes{:}] = ndgrid(griddims{:});
+inds = zeros(d,numel(data));
+for i=1:d
+    inds(i,:) = reshape(gridmeshes{i},1,[]);
 end
-hM = generatingSetBasis(transpose(M));
-summation = nestedFor(zeros(1,dM),epsilon'-1);
-while (summation.hasNext())
-    ind = summation.next();
-    indcp1 = num2cell(ind' + 1);
-    sumInd = num2cell(modM(hM*ind',transpose(M),'Target','symmetric','Index',true)'+torigin);
-    hatb(indcp1{:}) = sums(sumInd{:});
+gSetInds = round(generatingSetBasisDecomp(inds-repmat(origin',[1,numel(data)]),transpose(M),'Validate',false)+1);
+if strcmp(pp.Compute,'absolute Squares')
+    hatb = accumarray(gSetInds',data(:).^2)';
+else % else default: brackets
+    hatb = accumarray(gSetInds',data(:))';
+end
+if(dM>1)
+    hatb = reshape(hatb,epsilon');
 end
 debug('time',3,'StopTimer','the Bracket Sum');
 end

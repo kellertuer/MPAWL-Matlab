@@ -31,15 +31,20 @@ pp = p.Results;
 if (pp.Validate)
     isMatrixValid(M);
 end
-hM = generatingSetBasis(transpose(M),'Target','symmetric','Validate',false);
 d = size(M,1);
 dM = patternDimension(M);
 epsilon = diag(snf(M));
 epsilon = epsilon(d-dM+1:d);
 if (pp.Validate)
-    assert(all(size(hata)==epsilon'),['The coefficient array hata (',...
-        num2str(size(hata)),') is not of the correct size with respect to the cycles of M (',...
-        num2str(epsilon')]);
+    if (dM>1)
+        assert(all(size(hata)==epsilon'),['The coefficient array hata (',...
+            num2str(size(hata)),') is not of the correct size with respect to the cycles of M (',...
+            num2str(epsilon'),')']);
+    else
+        assert(length(hata) == epsilon, ['The coefficient array hata (',...
+            num2str(length(hata)),') is of wrong length with respect to the cycle of M (',...
+            num2str(epsilon'),')']);
+    end
 end
 % reorder
 debug('time',3,'StartTimer','Generating Fourier coefficients from space coefficients');
@@ -54,13 +59,19 @@ inds = zeros(d,numel(ckf));
 for i=1:d
     inds(i,:) = reshape(gridmeshes{i},1,[]);
 end
-    gSetInds = generatingSetBasisDecomp(inds-repmat(origin',[1,numel(ckf)]),transpose(M),'Validate',false)+1;
-gSetIndsc = cell(1,d);
+    gSetInds = round(generatingSetBasisDecomp(inds-repmat(origin',[1,numel(ckf)]),transpose(M),'Validate',false)+1);
+gSetIndsc = cell(1,dM);
 indsc = cell(1,d);
 for i=1:d
-    gSetIndsc{i} = gSetInds(i,:);
+    if i<=dM
+        gSetIndsc{i} = gSetInds(i,:);
+    end
     indsc{i} = inds(i,:);
 end
-ckf(sub2ind(size(ckf),indsc{:})) = hata(sub2ind(size(hata),gSetIndsc{:})).*ckphi(sub2ind(size(ckf),indsc{:}));
-debug('time',3,'StopTimer','Generating Fourier coefficients from space coefficients');
+if dM>1
+    ckf(sub2ind(size(ckf),indsc{:})) = hata(sub2ind(size(hata),gSetIndsc{:})).*ckphi(sub2ind(size(ckf),indsc{:}));
+else
+    ckf(sub2ind(size(ckf),indsc{:})) = hata(gSetInds).*ckphi(sub2ind(size(ckf),indsc{:}));
+end
+    debug('time',3,'StopTimer','Generating Fourier coefficients from space coefficients');
 end

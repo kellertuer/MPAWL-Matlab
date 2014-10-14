@@ -23,19 +23,19 @@ while summ.hasNext() % Loop for the Dirichlet-Case
 end
 
 ckDM
-
+dMBS_cmp = bracketSums_old(ckDM,origin,M);
 dMBS = bracketSums(ckDM,origin,M);
 
 dMBS;
 assert(dMBS(131)==2,'This value should be 2');
 
-ckDMIP = coeffsSpace2Fourier(1./(abs(det(M))*dMBS),ckDM,origin,M)
+ckDMIP = coeffsSpace2Fourier(M,1./(abs(det(M))*dMBS),ckDM,origin)
 
 t = bracketSums(ckDMIP,origin,M);
 assert(all(t == ones(size(t))*1/260),...
     'for the IP they all should be 1/260 = 0.0038');
 
 dMBSq = bracketSums(ckDM,origin,M,'Compute','absolute Squares');
-ckDMon = coeffsSpace2Fourier(1./sqrt(abs(det(M))*dMBSq),ckDM,origin,M)
+ckDMon = coeffsSpace2Fourier(M,1./sqrt(abs(det(M))*dMBSq),ckDM,origin)
 
 1/(2*sqrt(65))
