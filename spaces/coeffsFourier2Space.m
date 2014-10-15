@@ -36,49 +36,40 @@ d = size(M,1);
 dM = patternDimension(M);
 epsilon = diag(snf(M));
 epsilon = epsilon(d-dM+1:d);
-%Compute maximal values
-tmax = getMaxIndex(transpose(M));
-torigin = tmax+1;
-checks = Inf(2*tmax+1);
-debug('time',3,'StartTimer','Generating space coefficients from Fourier coefficients');
-sumObj = nestedFor(ones(size(size(ckphi))),size(ckphi)); %run through ckspace
-while sumObj,hasNext()
-    Ind = sumObj.next();
-    Indc = num2cell(Ind');
-    %INdex in checks array
-    checkIndc = num2cell(modM(Ind-origin,transpose(M),'Target','symmetric','Validate',false,'Index',true)+torigin);
-    if ckphi(Indc{:}) == 0
-        if all(Indc<=size(ckf)) && (ckf(Indc{:}) ~= 0) %lazy inRagne & nonzero
-            checks(checkIndc{:}) = NaN; %error
-        end %if it is zero, we have no contradiction and everything stays as it is
-    else
-        if all(Indc<=size(ckf)) %valid index
-            actfactor = ckf(Indc{:})/ckphi(Indc{:});
-        else
-            actfactor=0;
-        end
-        % Was a checks factor set before?
-        if isinf(checks(checkIndc{:})) %No
-            checks(checkIndc{:}) = actfactor;
-        elseif checks(checkIndc{:}) ~= actfactor %Yes but different than ours
-            checks(checkIndc{:}) = NaN; %error, contradiction
-        end
-    end 
-end %end while running over ckphi
+debug('time',3,'StartTimer','space coefficients from Fourier.');
+griddims = cell(1,d);
+for i=1:d
+    griddims{i} = 1:size(ckf,i);
+end
+gridmeshes = cell(1,d);
+[gridmeshes{:}] = ndgrid(griddims{:});
+inds = zeros(d,numel(ckf));
+for i=1:d
+    inds(i,:) = reshape(gridmeshes{i},1,[]);
+end
+gSetInds = round(generatingSetBasisDecomp(inds-repmat(origin',[1,numel(ckf)]),transpose(M),'Validate',false)+1);
+data = ckf./ckphi;
+hata = accumarray(gSetInds',data(:),NaN,@checkGroup)';
+if(dM>1)
+    hata = reshape(hata,epsilon');
+end
+debug('time',3,'StopTimer','space coefficients from Fourier coefficients.');
+end
 
-%collect result in right order
-if (sum(size(epsilon))==2) % one cycle
-    hata = zeros(1,epsilon);
+function v = checkGroup(x)
+% checkGroup(x)
+% check whether a group of Fourier coefficients (belonging to the same
+% congruence class) is a valid group, i.e. there is only a unique nonzero
+% value or all are zero, then this value is the result, else NaN is
+% returned
+if (numel(x)==0)
+    v = 0;
+elseif (numel(unique(x))==1)
+    v=unique(x);
 else
-    hata = zeros(epsilon);
+    v = unique(x(x~=0));
+    if (numel(v)>1)
+        v = NaN;
+    end
 end
-hM = generatingSetBasis(transpose(M));
-summation = nestedFor(zeros(1,dM),epsilon-ones(1,dM));
-while (summation.hasNext())
-    ind = summation.next();
-    indc = num2cell(ind'+1);
-    sumInd = num2cell(modM(ind*hM,transpose(M),'Target','symmetric','Index',true)'+torigin);
-    hata(indc{:}) = checks(sumInd{:});
-end
-debug('time',3,'StopTimer','Generating space coefficients from Fourier coefficients');
 end
