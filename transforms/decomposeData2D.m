@@ -42,12 +42,12 @@ function [decompTree,spaces] = decomposeData2D(gs,Js,M,hatdata,varargin)
 % MPAWL, R. Bergmann ~2014-09-28, last edit: 2014-09-29
 
 p = inputParser;
-addParamValue(p, 'ImageOutput','None');
-addParamValue(p, 'ImagePrefix','');
-addParamValue(p, 'Plotresolution',2*size(hatdata));
-addParamValue(p, 'SpacePrefix','');
-addParamValue(p, 'Orthonormalize',true,@(x) islogical(x));
-addParamValue(p, 'Levels',length(Js));
+addParameter(p, 'ImageOutput','None');
+addParameter(p, 'ImagePrefix','');
+addParameter(p, 'Plotresolution',2*size(hatdata));
+addParameter(p, 'SpacePrefix','');
+addParameter(p, 'Orthonormalize',true,@(x) islogical(x));
+addParameter(p, 'Levels',length(Js));
 parse(p, varargin{:});
 pp = p.Results;
 

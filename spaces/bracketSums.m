@@ -22,8 +22,8 @@ function hatb = bracketSums(data,origin,M,varargin)
 % MPAWL 1.0, R. Bergmann ~ 2014-08-30 ~ 2014-09-15
 
 p = inputParser;
-addParamValue(p, 'Validate',true,@(x) islogical(x));
-addParamValue(p, 'Compute','Bracket');
+addParameter(p, 'Validate',true,@(x) islogical(x));
+addParameter(p, 'Compute','Bracket');
 parse(p, varargin{:});
 pp = p.Results;
 if (pp.Validate)

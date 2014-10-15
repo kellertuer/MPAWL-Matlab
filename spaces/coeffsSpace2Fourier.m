@@ -25,7 +25,7 @@ function ckf = coeffsSpace2Fourier(M,hata,ckphi,origin,varargin)
 % MPAWL, R. Bergmann, 2014-10-05
 
 p = inputParser;
-addParamValue(p, 'Validate',true,@(x) islogical(x));
+addParameter(p, 'Validate',true,@(x) islogical(x));
 parse(p, varargin{:});
 pp = p.Results;
 if (pp.Validate)

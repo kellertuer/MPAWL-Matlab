@@ -22,41 +22,56 @@ function ckf = coeffsSpace2Fourier(M,hata,ckphi,origin,varargin)
 %      The corresponding Mathematica function is called
 %      'getFourierfromSpace' and was renamed to fit Matlab conventions
 % ---
-% MPAWL, R. Bergmann, 2014-09-10
+% MPAWL, R. Bergmann, 2014-10-05
 
 p = inputParser;
-addParamValue(p, 'Validate',true,@(x) islogical(x));
+addParameter(p, 'Validate',true,@(x) islogical(x));
 parse(p, varargin{:});
 pp = p.Results;
 if (pp.Validate)
     isMatrixValid(M);
 end
-hM = generatingSetBasis(transpose(M),'Target','symmetric','Validate',false);
 d = size(M,1);
 dM = patternDimension(M);
 epsilon = diag(snf(M));
 epsilon = epsilon(d-dM+1:d);
-
-tmax = getMaxIndex(transpose(M));
-torigin = tmax+1;
-
-coeffsOI = Inf(2*tmax+1);
-summation = nestedFor(zeros(1,dM),epsilon'-ones(1,dM));
+if (pp.Validate)
+    if (dM>1)
+        assert(all(size(hata)==epsilon'),['The coefficient array hata (',...
+            num2str(size(hata)),') is not of the correct size with respect to the cycles of M (',...
+            num2str(epsilon'),')']);
+    else
+        assert(length(hata) == epsilon, ['The coefficient array hata (',...
+            num2str(length(hata)),') is of wrong length with respect to the cycle of M (',...
+            num2str(epsilon'),')']);
+    end
+end
 % reorder
 debug('time',3,'StartTimer','Generating Fourier coefficients from space coefficients');
-while (summation.hasNext())
-    ind = summation.next();
-    indc = num2cell(ind'+1);
-    sumIndc = num2cell(modM(hM*ind',transpose(M),'Target','symmetric','Validate',false,'Index',true)'+torigin);
-    coeffsOI(sumIndc{:}) = hata(indc{:});
-end
 ckf = zeros(size(ckphi));
-summation = nestedFor(ones(size(size(ckphi))),size(ckphi));
-while (summation.hasNext())
-    ind = summation.next();
-    indc = num2cell(ind');
-    sumIndc = num2cell(modM((ind-origin)',transpose(M),'Target','symmetric','Validate',false,'Index',true)'+torigin);
-    ckf(indc{:}) = coeffsOI(sumIndc{:})*ckphi(indc{:});
+griddims = cell(1,d);
+for i=1:d
+    griddims{i} = 1:size(ckf,i);
 end
-debug('time',3,'StopTimer','Generating Fourier coefficients from space coefficients');
+gridmeshes = cell(1,d);
+[gridmeshes{:}] = ndgrid(griddims{:});
+inds = zeros(d,numel(ckf));
+for i=1:d
+    inds(i,:) = reshape(gridmeshes{i},1,[]);
+end
+    gSetInds = round(generatingSetBasisDecomp(inds-repmat(origin',[1,numel(ckf)]),transpose(M),'Validate',false)+1);
+gSetIndsc = cell(1,dM);
+indsc = cell(1,d);
+for i=1:d
+    if i<=dM
+        gSetIndsc{i} = gSetInds(i,:);
+    end
+    indsc{i} = inds(i,:);
+end
+if dM>1
+    ckf(sub2ind(size(ckf),indsc{:})) = hata(sub2ind(size(hata),gSetIndsc{:})).*ckphi(sub2ind(size(ckf),indsc{:}));
+else
+    ckf(sub2ind(size(ckf),indsc{:})) = hata(gSetInds).*ckphi(sub2ind(size(ckf),indsc{:}));
+end
+    debug('time',3,'StopTimer','Generating Fourier coefficients from space coefficients');
 end

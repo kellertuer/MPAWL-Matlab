@@ -18,7 +18,7 @@ function hatb = patternFFT(M,b,varargin)
 % ---
 % MPAWL 1.0, R. Bergmann ~ 2014-08-28
     p = inputParser;
-    addParamValue(p, 'Validate',true,@(x) islogical(x));
+    addParameter(p, 'Validate',true,@(x) islogical(x));
     parse(p, varargin{:});
     opt = p.Results;
     if (opt.Validate)

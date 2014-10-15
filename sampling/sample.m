@@ -24,9 +24,9 @@ function v = sample(M,f,varargin)
 % ---
 % MPAWL, R. Bergmann ~ 2014-09-16
 p = inputParser;
-addParamValue(p, 'Validate',true,@(x) islogical(x));
-addParamValue(p, 'File','');
-addParamValue(p, 'SamplingMethod','pointwise');
+addParameter(p, 'Validate',true,@(x) islogical(x));
+addParameter(p, 'File','');
+addParameter(p, 'SamplingMethod','pointwise');
 parse(p, varargin{:});
 pp = p.Results;
 if (pp.Validate)

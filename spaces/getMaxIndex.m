@@ -18,10 +18,10 @@ function maxInd = getMaxIndex(M,varargin)
 %        'CubeSize' : (ones(1,d)) cube size. 
 
 p = inputParser;
-addParamValue(p, 'Validate',true,@(x) islogical(x));
-addParamValue(p, 'Target','symmetric');
+addParameter(p, 'Validate',true,@(x) islogical(x));
+addParameter(p, 'Target','symmetric');
 d = size(M,1);
-addParamValue(p, 'CubeSize',ones(1,d));
+addParameter(p, 'CubeSize',ones(1,d));
 parse(p, varargin{:});
 pp = p.Results;
 if (pp.Validate)

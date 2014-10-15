@@ -15,7 +15,7 @@ function pMf = patternNormalForm(M,varargin)
 % ---
 % MPAWL 1.0, R. Bergmann ~ 2013-09-17 ~ last update: 2013-11-15
     p = inputParser;
-    addParamValue(p, 'Validate',true,@(x) islogical(x));
+    addParameter(p, 'Validate',true,@(x) islogical(x));
     parse(p, varargin{:});
     optionals = p.Results;
 

@@ -24,9 +24,8 @@ function hata = coeffsFourier2Space(M,ckf,ckphi,origin, varargin)
 %      'getFourierfromSpace' and was renamed to fit Matlab conventions
 % ---
 % MPAWL 1.0, R. Bergmann, 2014-09-10
-
 p = inputParser;
-addParamValue(p, 'Validate',true,@(x) islogical(x));
+addParameter(p, 'Validate',true,@(x) islogical(x));
 parse(p, varargin{:});
 pp = p.Results;
 if (pp.Validate)

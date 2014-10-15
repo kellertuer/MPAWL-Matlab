@@ -38,7 +38,7 @@ function [hatf_s,hatf_w] = patternFWT(M,J,phata,phatbS,phatbW,varargin)
 p = inputParser;
 addOptional(p,'ckxi',[]);
 addOptional(p,'origin',[]);
-addParamValue(p, 'Validate',true,@(x) islogical(x));
+addParameter(p, 'Validate',true,@(x) islogical(x));
 parse(p, varargin{:});
 pp = p.Results;
 if (pp.Validate)

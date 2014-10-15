@@ -24,9 +24,9 @@ function b = changeBasis(M, a, bracketSums,varargin)
 % MPAWL, R. Bergmann ~ 2014-09-17
 
 p = inputParser;
-addParamValue(p, 'Validate',true,@(x) islogical(x));
-addParamValue(p, 'Input','time');
-addParamValue(p, 'Output','time');
+addParameter(p, 'Validate',true,@(x) islogical(x));
+addParameter(p, 'Input','time');
+addParameter(p, 'Output','time');
 parse(p, varargin{:});
 ppV = p.Results.Validate;
 if (ppV)

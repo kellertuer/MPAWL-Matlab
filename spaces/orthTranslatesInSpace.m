@@ -28,7 +28,7 @@ function hatb = orthTranslatesInSpace(hata, M,J,varargin)
 % ---
 % MPAWL, R. Bergmann 
 p = inputParser;
-addParamValue(p, 'Validate',true,@(x) islogical(x));
+addParameter(p, 'Validate',true,@(x) islogical(x));
 parse(p, varargin{:});
 pp = p.Results;
 if (pp.Validate)
