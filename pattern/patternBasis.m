@@ -29,8 +29,8 @@ function V = patternBasis(M,varargin)
 % ]
 
 p = inputParser;
-addParamValue(p, 'Validate',true,@(x) islogical(x));
-addParamValue(p, 'Target','unit');
+addParameter(p, 'Validate',true,@(x) islogical(x));
+addParameter(p, 'Target','unit');
 parse(p, varargin{:});
 ppV = p.Results.Validate;
 target = p.Results.Target;

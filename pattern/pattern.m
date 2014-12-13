@@ -18,8 +18,8 @@ function s = pattern(M,varargin)
 % ---
 % MPAWL 1.0 ~ R. Bergmann ~ 2013-11-15 ~ last edit: 2014-08-19
 p = inputParser;
-addParamValue(p, 'Target','symmetric');
-addParamValue(p, 'Validate',true,@(x) islogical(x));
+addParameter(p, 'Target','symmetric');
+addParameter(p, 'Validate',true,@(x) islogical(x));
 parse(p, varargin{:});
 pp = p.Results;
 if (pp.Validate)

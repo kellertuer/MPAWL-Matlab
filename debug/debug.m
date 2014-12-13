@@ -36,10 +36,10 @@ function debug(type, level, varargin)
     end
     % Parse parameters
     p = inputParser;
-    addParamValue(p, 'StartTimer','');
-    addParamValue(p, 'StopTimer','');
-    addParamValue(p, 'TimeFormat','%09.8f');
-    addParamValue(p, 'Text','');
+    addParameter(p, 'StartTimer','');
+    addParameter(p, 'StopTimer','');
+    addParameter(p, 'TimeFormat','%09.8f');
+    addParameter(p, 'Text','');
     parse(p, varargin{:});
     debugparams = p.Results;
     %

@@ -27,10 +27,10 @@ function [ hata, hatb ] = delaValleePoussinSubspaces(g,M,J,varargin)
 % ---
 % MPAWL, R. Bergmann ~ 2014-09-26
 p = inputParser;
-addParamValue(p, 'Validate',true,@(x) islogical(x));
-addParamValue(p, 'File',{});
-addParamValue(p, 'Orthonormalize',true,@(x) islogical(x));
-addParamValue(p, 'Support',1);
+addParameter(p, 'Validate',true,@(x) islogical(x));
+addParameter(p, 'File',{});
+addParameter(p, 'Orthonormalize',true,@(x) islogical(x));
+addParameter(p, 'Support',1);
 parse(p, varargin{:});
 pp = p.Results;
 if (pp.Validate)

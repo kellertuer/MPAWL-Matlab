@@ -28,8 +28,8 @@ function v = generatingSetBasisDecomp(k,M,varargin)
 % 	Return[(modM[Inverse[aBV].k,mE, Target -> t])[[d-dM+1;;d]]];
 % ];
 p = inputParser;
-addParamValue(p, 'Validate',true,@(x) islogical(x));
-addParamValue(p, 'Target','unit');
+addParameter(p, 'Validate',true,@(x) islogical(x));
+addParameter(p, 'Target','unit');
 parse(p, varargin{:});
 if (p.Results.Validate)
     isMatrixValid(M);

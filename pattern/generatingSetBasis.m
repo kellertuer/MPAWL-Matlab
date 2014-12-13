@@ -31,8 +31,8 @@ function V = generatingSetBasis(M,varargin)
 % ];
 
 p = inputParser;
-addParamValue(p, 'Validate',true,@(x) islogical(x));
-addParamValue(p, 'Target','symmetric');
+addParameter(p, 'Validate',true,@(x) islogical(x));
+addParameter(p, 'Target','symmetric');
 parse(p, varargin{:});
 ppV = p.Results.Validate;
 target = p.Results.Target;

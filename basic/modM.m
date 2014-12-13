@@ -22,9 +22,9 @@ function h = modM(k,M,varargin)
 % MPAWL 1.0, written on 2013-09-11 by Ronny Bergmann
 
 p = inputParser;
-addParamValue(p, 'Validate',true,@(x) islogical(x));
-addParamValue(p, 'Target','unit');
-addParamValue(p, 'Index',false);
+addParameter(p, 'Validate',true,@(x) islogical(x));
+addParameter(p, 'Target','unit');
+addParameter(p, 'Index',false);
 parse(p, varargin{:});
 ppV = p.Results.Validate;
 target = p.Results.Target;

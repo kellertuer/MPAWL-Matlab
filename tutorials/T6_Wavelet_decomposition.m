@@ -16,7 +16,7 @@ Xi = pi*[1,0,0.125,0,0.125; 0,1,0,0.125,-0.125] %#ok<*NOPTS>
 ct = sum(Xi,2)/2; %center point
 nu = ones(length(Xi),1);
 
-n = 512;
+n = 1024;
 [X,Y] = meshgrid(-pi:2*pi/n:pi-2*pi/n, -pi:2*pi/n:pi-2*pi/n);
 debug('time',3,'StartTimer','Box Spline sampling on a grid');
 Z = reshape(box_eval(Xi,nu,[X(:),Y(:)]+ones(length(X(:)),1)*ct'),size(X));
