@@ -9,7 +9,12 @@
 % MPAWL, R. Bergmann ~ 2014-09-29
 clc
 format compact
+start = pwd;
+cd(fileparts(which(mfilename)));
+run('../initMPAWL.m') %Initialize Library
 setDebugLevel(3);
+setDebugLevel('time',3);
+
 disp('--- Tutorial 1: Patterns and generating Sets ---');
 disp(' (a) pattern ');
 disp('We start wird a simple matrix');
@@ -29,13 +34,13 @@ title('Plot pattern(M) on the symmetric interval');
 axis tight
 axis square
 
-disp('How many vectors (and theis integer multiples) are needed for this matrix? patternDimension(M) tells us:')
+disp('How many vectors (and their integer multiples) are needed for this matrix? patternDimension(M) tells us:')
 dM = patternDimension(M)
 
 disp('and which vector is that? patternBasis(M) returns them as columns of a matrix');
 hM = patternBasis(M)
 
-disp('Actually both are basen on the Smith normal form of a matrix, snf(M):');
+disp('Actually both are bases on the Smith normal form of a matrix, snf(M):');
 
 snfM = snf(M)
 
@@ -73,7 +78,8 @@ disp('and verify by computing modM(c*kMt,Mt) for the symmetric case.');
 
 p2r = modM(c*kMt,Mt,'Target','symmetric')
 
-disp('All values should be integer, so modM also posesses the possibility to only produce those, by setting ''Index'' to true');
+disp('All values should be integer, so modM also possesses the possibility to only produce those, by setting ''Index'' to true');
 p2r2 = modM(c*kMt,Mt,'Target','symmetric','Index',true)
-% disp('---');
+disp('--- End of Tutorial 1');
 % end
+cd(start)
