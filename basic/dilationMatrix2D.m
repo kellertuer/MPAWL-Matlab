@@ -1,6 +1,6 @@
 function M = dilationMatrix2D(str)
 % dilationMatrix2D(str) return a matrix of the 2D cases based on a string
-% from the set {'X','Y','D','X+','X-','Y+','Y-'}
+% from the set {'X','Y','D','Xp','Xm','Yp','Ym'}
 %
 % INPUT
 %   str : a string representing a matrix
@@ -17,13 +17,13 @@ switch str
         M = [1,0;0,2];
     case 'D'
         M = [1,-1;1,1];
-    case 'X+'
+    case 'Xp'
         M = [2,0;1,1];
-    case 'X-'
+    case 'Xm'
         M = [2,0;-1,1];
-    case 'Y+'
+    case 'Yp'
         M = [1,1;0,2];
-    case 'Y-'
+    case 'Ym'
         M = [1,-1;0,2];
     otherwise
         error('Unknown 2D dilation matrix');
