@@ -3,7 +3,7 @@
 %   A Tree of Wavelet Decompositions
 %
 % ---
-% MPAWL 1.0 ~ R. Bergmann 2014-12-22
+% MPAWL 1.0 ~ R. Bergmann 2015-01-01
 clc
 format compact
 startFolder = pwd;

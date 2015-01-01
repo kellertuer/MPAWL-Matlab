@@ -112,7 +112,7 @@ for i=1:length(lvlmats)
         constructionSuc = true;
     catch
         N
-        warning(['The matrix N is not valid, continuing with next dilationMatrix2D']);
+        warning('The matrix N is not valid, continuing with next dilationMatrix2D');
         constructionSuc = false;
     end
     if constructionSuc %succesfully constructed/loaded Wavelets/Scaling functions -> decompose and recursively continue

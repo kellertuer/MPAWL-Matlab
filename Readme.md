@@ -1,4 +1,4 @@
-# MPAWL for MatLab =
+# MPAWL for MatLab
 This `MatLab` Library is an implementation of the periodic Wavelet Transform based on an integral regular matrix __M__ and its factorization into dilation matrices. Introducing the multivariate de la Vallée Poussin means, this Library provides many scaling functions for the levels of decomposition. This package  was transcribed from the Mathematica version, which is available at [https://github.com/kellertuer/MPAWL](https://github.com/kellertuer/MPAWL)
 
 The underlying theory of patterns, its generating groups and the fast Fourier transform on these patterns is also implemented in this Library yielding a fast Wavelet Transform, when computing in Fourier coefficients. Further, several functions to work with the translates of a function with respect to the pattern
