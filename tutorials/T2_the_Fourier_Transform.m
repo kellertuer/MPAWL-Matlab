@@ -8,7 +8,13 @@
 % MPAWL, R. Bergmann ~ 2014-09-29
 clc
 format compact
+clc
+format compact
+start = pwd;
+cd(fileparts(which(mfilename)));
+run('../initMPAWL.m') %Initialize Library
 setDebugLevel(3);
+setDebugLevel('time',3);
 disp('--- Tutorial 2: The Fourier Transform on arbitrary patterns');
 disp(' Imagine the pattern given by');
 M = [16,4;0,16] %#ok<*NOPTS>

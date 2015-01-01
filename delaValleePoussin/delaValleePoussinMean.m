@@ -1,5 +1,5 @@
 function [ckphi, BSums] = delaValleePoussinMean(pg,M,varargin)
-% delaValleePoussinMean(g,M)
+% [ckphi, BSums] = delaValleePoussinMean(g,M)
 % Generate the de la Vallée Poussin mean based on the function g with
 % respect to the translates of pattern(M), where g has to be a partition of
 % unity in the d-dimensional space, nonnegative everywhere and positive on

@@ -9,7 +9,11 @@
 % MPAWL, R. Bergmann ~ 2014-09-30
 clc
 format compact
+start = pwd;
+cd(fileparts(which(mfilename)));
+run('../initMPAWL.m') %Initialize Library
 setDebugLevel(3);
+setDebugLevel('time',3);
 disp('--- Tutorial 3: Translation invariant spaces ---');
 disp('We again use the matrix');
 M = [32,4;-1,8] %#ok<*NOPTS>

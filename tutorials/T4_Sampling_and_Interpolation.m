@@ -10,7 +10,11 @@
 % MPAWL, R. Bergmann ~ 2014-09-30
 clc
 format compact
+start = pwd;
+cd(fileparts(which(mfilename)));
+run('../initMPAWL.m') %Initialize Library
 setDebugLevel(3);
+setDebugLevel('time',3);
 disp('--- Tutorial 4: Sampling and Interpolation ---');
 disp(' (a) Sampling a box spline ');
 disp('Let''s assume the following Xi to define a Boxspline, each column having multiplicity 1');
@@ -38,7 +42,7 @@ data = sample(M,@(x)(box_eval(Xi,nu,x+ones(length(x),1)*ct')),...
 disp('Using the Dirichlet Kernel from the last Tutorial including its Bracket Sums,');
 disp('we can perform a change of basis from the interpolating basis (points from above) to the Dirichlet kernel translates');
 
-[ckdM,dMBS] = dirichletKernel(M,'File',{'tutorials/T4-files/ckDM.mat','tutorials/T4-files/ckDM-BS.mat'});
+[ckdM,dMBS] = dirichletKernel(M,'File',{'T4-files/ckDM.mat','T4-files/ckDM-BS.mat'});
 hata = changeBasis(M,data,dMBS,'Input','time','Output','Fourier');
 
 disp('And reconstruct its Fourier coefficients');
@@ -57,7 +61,7 @@ title('Illustration of the interpolation error');
 disp(' (b) Sampling a linear function ');
 
 data2 = sample(M,@(x)(sum(x)),...
-    'File','tutorials/T4-files/samplelinear.mat');
+    'File','T4-files/samplelinear.mat');
 
 hata2 = changeBasis(M,data2,dMBS,'Input','time','Output','Fourier');
 

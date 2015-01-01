@@ -10,7 +10,11 @@
 % MPAWL, R. Bergmann ~ 2014-09-30
 clc
 format compact
+start = pwd;
+cd(fileparts(which(mfilename)));
+run('../initMPAWL.m') %Initialize Library
 setDebugLevel(3);
+setDebugLevel('time',3);
 disp('--- Tutorial 5: de la Vallée POussin means and nested spaces ---');
 disp('While the dirichlet kernel is just a modified characteristic function,');
 disp('the de la Vallée Poussin kernel is based on a function g, for example the pyramid function');
