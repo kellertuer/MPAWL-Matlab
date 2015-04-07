@@ -83,12 +83,14 @@ axis square
 disp(' (b) De la Vallée Poussin means and a decomposition Tree');
 disp(' The localization of the edges is not that good using the dirichlet kernel. Let''s try de la Vallée Poussin');
 
-[ckdlVPM,dlVPMBS] = delaValleePoussinMean(1/8,M,'File',{'T6-files/ckdlVPM.mat','T6-files/ckdlVPM-BS.mat'});
+t = 1/1024;
+
+[ckdlVPM,dlVPMBS] = delaValleePoussinMean(t,M,'File',{'T6-files/ckdlVPM.mat','T6-files/ckdlVPM-BS.mat'});
 origin2 = (size(ckdlVPM)+1)/2;
 cdata2 = changeBasis(M,data,dlVPMBS,'Output','Fourier');
 
 disp('But we will use the multilevel approach this time, even only for one level: decomposeData2D');
-decomposeData2D(1/8,{{'X'}},M,cdata2,'ImageOutput','Both')
+decomposeData2D(t,{{'X'}},M,cdata2,'ImageOutput','Both')
 %%
 disp('But it is also possible to perform more than one decomposition and to save/load coefficients and images');
-decomposeData2D(1/14*ones(1,6),{{'D'},{'Y'},{'Y'},{'Y'},{'X'}},M,cdata2,'ImageOutput','Both','ImagePrefix','T6-files/img','SpacePrefix','T6-files/space')
+decomposeData2D(t*ones(1,6),{{'D'},{'X'},{'X'},{'X'},{'Y'}},M,cdata2,'ImageOutput','Both','ImagePrefix','T6-files/img','SpacePrefix','T6-files/space')

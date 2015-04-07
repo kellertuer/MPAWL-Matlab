@@ -13,7 +13,7 @@ function [decompTree,spaces] = decomposeData2D(gs,Js,M,hatdata,varargin)
 %             length(gs)-1, or both equal to length 1.
 %   M       : pattern(M) the data was sampled on
 %   hatdata : Fourier-Transform of sampled data given with rspect to the
-%          translates of the g{1}-delaValléePoussin mean.
+%          translates of the g{1}-delaVallÃ©ePoussin mean.
 %
 % OUTPUT
 %   decompTree : (struct-tree) For each decomposition Level this cell-structure contains

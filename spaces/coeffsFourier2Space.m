@@ -1,5 +1,5 @@
 function hata = coeffsFourier2Space(M,ckf,ckphi,origin, varargin)
-% coeffsFourier2Space(ckf,ckphi,origin,M)
+% coeffsFourier2Space(M,ckf,ckphi,origin)
 %  compute the coefficients of the space of translates (w.r.t. pattern(M))
 %  of phi for f based on the given Fourier coefficients ckf and ckphi,
 %  if possible (else a NaN-matrix is returned). 
@@ -48,9 +48,12 @@ for i=1:d
 end
 gSetInds = round(generatingSetBasisDecomp(inds-repmat(origin',[1,numel(ckf)]),transpose(M),'Validate',false)+1);
 data = ckf./ckphi;
-hata = accumarray(gSetInds',data(:),NaN,@checkGroup)';
-if(dM>1)
-    hata = reshape(hata,epsilon');
+hata = conj(accumarray(gSetInds',data(:),epsilon',@checkGroup,NaN)');
+%if(dM>1)
+%    hata = reshape(hata,epsilon');
+%end
+if any(isnan(hata))
+    warning('the given data does not seem to be in the space of translates, the coefficients contain NaNs!');
 end
 debug('time',3,'StopTimer','space coefficients from Fourier coefficients.');
 end
@@ -66,9 +69,24 @@ if (numel(x)==0)
 elseif (numel(unique(x))==1)
     v=unique(x);
 else
-    v = unique(x(x~=0));
-    if (numel(v)>1)
+    if any(isinf(x)) %ckf nonzero ckphi zero
         v = NaN;
+    elseif any(isnan(x)) %only okay is all are NaN
+        if all(isnan(x))
+            v = 0;
+        else
+            v = NaN;
+        end
+    else
+        %the only things that may happen is nans and we can ignore these
+        v = unique(x(~isnan(x)));
+        if (numel(v)>1) %if v is not unique, we return nan.
+          if max(abs(mean(v)-v))>eps
+              v = NaN;
+          else
+            v = mean(v);
+          end
+        end
     end
 end
 end

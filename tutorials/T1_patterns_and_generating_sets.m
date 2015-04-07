@@ -17,7 +17,7 @@ setDebugLevel('time',3);
 
 disp('--- Tutorial 1: Patterns and generating Sets ---');
 disp(' (a) pattern ');
-disp('We start wird a simple matrix');
+disp('We start with a simple matrix');
 
 M = [32,4;-1,8] %#ok<*NOPTS>
 
