@@ -52,8 +52,8 @@ hata = conj(accumarray(gSetInds',data(:),epsilon',@checkGroup,NaN)');
 %if(dM>1)
 %    hata = reshape(hata,epsilon');
 %end
-if any(isnan(hata))
-    warning('the given data does not seem to be in the space of translates, the coefficients contain NaNs!');
+if any(isnan(hata(:))) || any(isinf(hata(:)))
+    warning('the given data does not seem to be in the space of translates, the coefficients contain NaNs of Infs!');
 end
 debug('time',3,'StopTimer','space coefficients from Fourier coefficients.');
 end
@@ -71,12 +71,8 @@ elseif (numel(unique(x))==1)
 else
     if any(isinf(x)) %ckf nonzero ckphi zero
         v = NaN;
-    elseif any(isnan(x)) %only okay is all are NaN
-        if all(isnan(x))
+    elseif all(isnan(x))
             v = 0;
-        else
-            v = NaN;
-        end
     else
         %the only things that may happen is nans and we can ignore these
         v = unique(x(~isnan(x)));
