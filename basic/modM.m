@@ -3,7 +3,7 @@ function h = modM(k,M,varargin)
 %      congruence class representants
 %
 %   INPUT
-%       k: a d-dimensional vector
+%       k: a d-dimensional vector or a d x N1 x N2 x .... array with N1,N2,... arbitrary and arbitrarily many dimensions
 %       M: a dxd regular integral matrix
 %       target (optional): specify the congrunce class representants
 %           'unit' (standard): [0,1)^d or 'symmetric': [-0.5,0.5)^d

@@ -16,11 +16,9 @@
 % If only one or no return value is specified, the matrix S is returned.
 %
 % ---
-% MPAWL 1.0, D. Merkert ~ 2014-07-31 ~ last edit: 2014-08-19 (R. Bergmann)
+% MPAWL 1.0, D. Merkert ~ 2014-07-31 ~ last edit: 2016-08-16 (R. Bergmann)
 
-% TODO: The code could be improved by (1) adding more comments and (2)
-% reduce the possibilities of too large values in between (maybe by
-% adapting the code from A. Pascoletti.
+% Note that since Matlab 2016 there is a snf available directly in matlab.
 
 function [U,S,V] = snf(A)
 
