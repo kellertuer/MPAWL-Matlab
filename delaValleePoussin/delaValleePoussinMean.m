@@ -55,7 +55,7 @@ if ~isempty(FileStr)
         if (all(vars.M==M))
             ckphi = vars.ckphi;
             if pp.Orthonormalize && ~vars.orthonormalized
-                torigin = (size(ckphi)-1)/2;
+                torigin = (size(ckphi)+1)/2;
                 ckBSq = bracketSums(ckphi,torigin,M,'Validate',false,'Compute','absolute Squares');
                 ckphi = coeffsSpace2Fourier(M,1./(sqrt(ckBSq)),ckphi,torigin,'Validate',false);
             end
@@ -79,7 +79,7 @@ if ~isempty(BSStr)
     else
         debug('text',3,'Text',['The specified file ''',BSStr,''' does not exist yet.']);
         if ~isempty(ckphi)
-            torigin = (size(ckphi)-1)/2;
+            torigin = (size(ckphi)+1)/2;
             BSums = bracketSums(ckphi,torigin,M,'Validate',false);
             try
                 save(BSStr,'M','BSums');
@@ -145,9 +145,9 @@ else
 end
 debug('time',3,'StopTimer','constructing the de la Vallée Poussin mean');
 if pp.Orthonormalize
-    torigin = (size(ckphi)-1)/2;
+    torigin = (size(ckphi)+1)/2;
     ckBSq = bracketSums(ckphi,torigin,M,'Validate',false,'Compute','absolute Squares');
-    ckphi = coeffsSpace2Fourier(M,1./(sqrt(ckBSq)),ckphi,torigin,'Validate',false);
+    ckphi = coeffsSpace2Fourier(M.',1./sqrt(ckBSq),ckphi,torigin,'Validate',true);
 end
 % File savings
 if ~isempty(BSStr) || (nargout==2)
