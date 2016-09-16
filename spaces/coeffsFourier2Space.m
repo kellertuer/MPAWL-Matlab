@@ -72,7 +72,7 @@ else
     if any(isinf(x)) %ckf nonzero ckphi zero
         v = NaN;
     elseif all(isnan(x))
-            v = 0;
+        v = 0;
     else
         %the only things that may happen is nans and we can ignore these
         v = unique(x(~isnan(x)));

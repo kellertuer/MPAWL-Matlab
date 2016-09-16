@@ -16,7 +16,7 @@ function hatb = bracketSums(data,origin,M,varargin)
 % OPTIONAL PARAMETERS
 %   'Validate' : (true) Whether to check the validtidy of input M and origin
 %   'Compute'  : ('Bracket') compute different sums, other values:
-%                 'absolute Suqares'
+%                 'absolute Squares', 'absolute Values'
 %
 % ---
 % MPAWL 1.0, R. Bergmann ~ 2014-08-30 ~ 2014-09-15

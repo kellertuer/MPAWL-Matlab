@@ -35,11 +35,18 @@ end
 d = size(M,1);
 dM = patternDimension(M);
 epsilon = diag(snf(M)); epsilon = epsilon(d-dM+1:d);
-if (ppV) && (~(all(size(a)==epsilon')))
-    assert(all(size(a)==epsilon'),...
-        ['The required size for the coefficients is ''',num2str(epsilon'),''' but a is of size ''',num2str(size(a)),'''.']);
-    assert(all(size(bracketSums)==epsilon'),...
-        ['The required size for the Bracet sums is ''',num2str(epsilon'),''' but bracketSums is of size ''',num2str(size(bracketSums)),'''.']);
+if (ppV)
+    if (length(epsilon)>1) && (~(all(size(a)==epsilon')))
+        assert(all(size(a)==epsilon'),...
+            ['The required size for the coefficients is ''',num2str(epsilon'),''' but a is of size ''',num2str(size(a)),'''.']);
+        assert(all(size(bracketSums)==epsilon'),...
+            ['The required size for the Bracket sums is ''',num2str(epsilon'),''' but bracketSums is of size ''',num2str(size(bracketSums)),'''.']);
+    else %1D case
+        assert(all(numel(a)==epsilon'),...
+            ['The required size for the coefficients is ''',num2str(epsilon'),''' but a is of size ''',num2str(size(a)),'''.']);
+        assert(all(size(bracketSums)==epsilon'),...
+            ['The required size for the Bracket sums is ''',num2str(epsilon'),''' but bracketSums is of size ''',num2str(size(bracketSums)),'''.']);
+    end
 end
 if strcmp(p.Results.Input,'time')
     debug('text',3,'Text','Performing Fourier Transform on the input from time to Fourier domain');

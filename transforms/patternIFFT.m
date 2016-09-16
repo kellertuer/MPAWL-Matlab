@@ -41,7 +41,7 @@ function hatb = patternIFFT(M,b,varargin)
    debug('time',3,'StartTimer','pfft');
    inthatb = ifftn(intb); %dM-dimensional Fourier transform
    debug('time',3,'StopTimer','pfft');
-   if isvector(b)
+   if isvector(b) && (length(e) > 1)
        hatb = inthatb(:);
    else
        hatb = inthatb;
