@@ -36,7 +36,7 @@ d = size(M,1);
 dM = patternDimension(M);
 epsilon = diag(snf(M)); epsilon = epsilon(d-dM+1:d);
 if (ppV)
-    if (length(epsilon)>1) && (~(all(size(a)==epsilon')))
+    if length(epsilon)>1
         assert(all(size(a)==epsilon'),...
             ['The required size for the coefficients is ''',num2str(epsilon'),''' but a is of size ''',num2str(size(a)),'''.']);
         assert(all(size(bracketSums)==epsilon'),...

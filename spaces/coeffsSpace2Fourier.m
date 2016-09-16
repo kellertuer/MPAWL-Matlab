@@ -59,7 +59,7 @@ inds = zeros(d,numel(ckf));
 for i=1:d
     inds(i,:) = reshape(gridmeshes{i},1,[]);
 end
-    gSetInds = round(generatingSetBasisDecomp(inds-repmat(origin',[1,numel(ckf)]),M,'Validate',false)+1);
+    gSetInds = round(generatingSetBasisDecomp(inds-repmat(origin',[1,numel(ckf)]),M','Validate',false)+1);
 gSetIndsc = cell(1,dM);
 indsc = cell(1,d);
 for i=1:d

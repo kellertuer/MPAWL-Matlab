@@ -8,8 +8,6 @@
 % MPAWL, R. Bergmann ~ 2014-09-29
 clc
 format compact
-clc
-format compact
 start = pwd;
 cd(fileparts(which(mfilename)));
 run('../initMPAWL.m') %Initialize Library

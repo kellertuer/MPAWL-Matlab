@@ -6,7 +6,7 @@
 % whose translates generate an m=|det(M)| dimensional space.
 %
 % ---
-% MPAWL, R. Bergmann ~ 2014-09-30
+% MPAWL, R. Bergmann ~ 2014-09-30 | 2016-09-16
 clc
 format compact
 start = pwd;
@@ -65,7 +65,7 @@ title('Plot of the modified dirichlet Kernel DM(x,y), which is already interpola
 figure(3);
 [X,Y] = meshgrid(-pi:2*pi/256:pi-2*pi/256,-pi:2*pi/256:pi-2*pi/256);
 [Xl,Yl] = meshgrid(-pi:2*pi/64:pi-2*pi/64,-pi:2*pi/64:pi-2*pi/64);
-imgDMl = 1/abs(det(M))*real(discretePlotFourierSeries(64*[1,1],ckDM));
+imgDMl = 1/abs(det(M))*real(FourierSeries2Img(64*[1,1],ckDM));
 rangel = max(max(abs(imgDMl)));
 hold on
 surf(X,Y,imgDM,'FaceAlpha',.8,'FaceColor','interp','EdgeColor','k','EdgeAlpha',0.2);

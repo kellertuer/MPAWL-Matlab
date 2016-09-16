@@ -105,12 +105,12 @@ if isa(g,'function_handle')
     debug('text',3,'Text','Computing de la Vallée Poussin scaling function');
     ckphi = zeros(2*tmax+1);
     griddims = cell(1,d);
-    for i=1:dM
+    for i=1:d
         griddims{i} = 1:(2*tmax(i)+1);
     end
     gridmeshes = cell(1,d);
     [gridmeshes{:}] = ndgrid(griddims{:});
-    inds = zeros(dM,numel(ckphi));
+    inds = zeros(d,numel(ckphi));
     for i=1:d
         inds(i,:) = reshape(gridmeshes{i},1,[]);
     end
@@ -118,7 +118,7 @@ if isa(g,'function_handle')
     for i=1:d
         indsc{i} = inds(i,:);
     end
-    ckphi(sub2ind(size(ckphi),indsc{:})) = g(transpose(M)\(inds-repmat(torigin,[1,numel(ckphi)])));
+    ckphi(sub2ind(size(ckphi),indsc{:})) = g(transpose(M)\(inds-repmat(torigin',[1,numel(ckphi)])));
 elseif isvector(g)
     ind = max(1+2*g,pp.Support*ones(size(g)));
     tmax = getMaxIndex(transpose(M),'Target','symetric','Cube',ind)+1; %+1 for security
