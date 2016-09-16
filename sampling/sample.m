@@ -21,14 +21,26 @@ function v = sample(M,f,varargin)
 %                      points rowwise in a matrix, i.e. a matrix det(M)xd,
 %                      similarly 'point col' will call f with a dxdet(M)
 %                      matrix.
+%   'Domain' : ('space') sample domain: sample in 'space' (on P(M)) or 
+%               in 'frequency' (w.r.t. FFT, i.e. on G(M^T))
+%   'Scale'  : (2*pi in space, 1 in frequency) factor by which the pattern
+%              is scaled. Can also be a matrix, e.g. for rotationg all points
+%   'Target' : ('symmetric') whether to produce a basis for the 'unit' cube or
+%               the nearly 'symmetric' block. 
+%   'SampleSize': ([1]) the size of a function evaluations
 % ---
 % MPAWL, R. Bergmann ~ 2014-09-16
 p = inputParser;
 addParameter(p, 'Validate',true,@(x) islogical(x));
 addParameter(p, 'File','');
 addParameter(p, 'SamplingMethod','pointwise');
+addParameter(p, 'Target','symmetric');
+addParameter(p, 'Domain','space');
+addParameter(p, 'Scale',NaN);
+addParameter(p, 'SampleSize',[1]);
 parse(p, varargin{:});
 pp = p.Results;
+
 if (pp.Validate)
     isMatrixValid(M);
 end
@@ -45,55 +57,89 @@ if numel(pp.File)>0
         debug('text',3,'Text',['The specified file ''',pp.File,''' does not exist yet; trying to write to it']);
     end
 end
-d = size(M,1);
-dM = patternDimension(M);
+if (isnan(pp.Scale))
+    if strcmp(pp.Domain,'space') && isa(f, 'function_handle')
+        pp.Scale = 2*pi;
+    else
+        pp.Scale = 1;
+    end
+end
+if strcmp(pp.Domain,'frequency')
+    M = transpose(M);
+end
 m = abs(det(M));
-epsilon = diag(snf(M)); epsilon = epsilon(d-dM+1:d);
-pMBasis = patternBasis(M,'Validate',false);
+d = size(M,1);
+Dim = patternDimension(M);
+Size = patternSize(M);
+
+if strcmp(pp.Domain,'space')
+    Basis = patternBasis(M,'Target',pp.Target);
+else
+    Basis = generatingSetBasis(M,'Target',pp.Target);
+end
+
 if ~isa(f, 'function_handle') % no function handle
-    assert(all(size(f))==[m,m],['The data array has to be of size ',num2str(m),'x',num2str(m),'.']);
+    assert(all(size(f)==[m,m]),['The data array has to be of size ',num2str(m),'x',num2str(m),'.']);
 end
-pointSet = 0;
-if ~strcmp(pp.SamplingMethod,'pointwise');
-    pointSet = zeros(m,d); %m rows, d cols -> create in row mode
+
+pointSet = zeros([d,Size]);
+
+for i = 1:Dim
+  b = repmat((0:(Size(i)-1)),[d,1]) .* repmat(Basis(:,i),[1,Size(i)]);
+
+  s = ones(1,Dim+1);
+  s(1) = d;
+  s(i+1) = Size(i);
+
+  b = reshape(b,s);
+
+  s = [d,Size];
+  s(i+1) = 1;
+  s(1) = 1;
+
+  pointSet = pointSet + repmat(b,s);
 end
-summation = nestedFor(zeros(1,dM),epsilon'-1);
-v = zeros(epsilon');
+
+if strcmp(pp.Domain,'space')
+    pointSet = pp.Scale*modM(pointSet,eye(d),'Target',pp.Target);
+else
+    pointSet = pp.Scale*modM(pointSet,M,'Target',pp.Target);
+end
+pointSet = reshape(pointSet,d,[]); %row of points
+
 debug('text',2,'Text','Starting to sample');
 debug('time',3,'StartTimer','samplingTimer');
-while summation.hasNext()
-    ind = summation.next();
-    indcp1 = num2cell(ind'+1);
-    pt = 2*pi*modM(pMBasis*ind',eye(d),'Target','symmetric','Validate',false);
-    if ~isa(f,'function_handle')
-        indA = num2cell( (modM(pMBasis*ind',eye(d),'Target','symmetric','Validate',false) + 0.5)*m);
-        v(indcp1) = f(indA);
-    else %function handle
-        if (sum(size(pointSet))==2) % point wise sampling
-            v(indcp1{:}) = f(pt);
-        else
-            pointSet(sub2ind(epsilon,indcp1{:}),:) = pt;  %#ok<AGROW>
+if strcmp(pp.SamplingMethod,'pointwise')
+  v = zeros([pp.SampleSize,prod(Size)]);
+    for index = 1:size(pointSet,2)
+        if ~isa(f,'function_handle')
+            indA = num2cell( (modM(pointSet(:,index),eye(d),'Target','unit','Validate',false))*m+1);
+            v(:,index) = f(indA{:});
+        else %function handle
+            v(:,index) = f(pointSet(:,index));
         end
+    end
+else
+    if strcmp(pp.SamplingMethod,'point row') %det(M)xd
+        v = f(pointSet');
+    elseif strcmp(pp.SamplingMethod,'point col')
+        v = f(pointSet);
+    else
+        error('unknown sampling type');
     end
 end
 debug('time',3,'StopTimer','samplingTimer');
-if (sum(size(pointSet))~=2)
-    if (strcmp(pp.SamplingMethod,'point row'))
-        v = f(pointSet);
-    elseif (strcmp(pp.SamplingMethod,'point col'))
-        v = f(pointSet');
-    elseif ~strcmp(pp.SamplingMethod,'pointwise')
-        error('unknown sampling type');
-    end
-    epsc = num2cell(epsilon');
-    v = reshape(v',epsc{:}); %reshape to fit cycles after sampling
-end
+
+v = reshape(v,[pp.SampleSize,Size]);
+
 if (numel(pp.File) > 0)
     try
         save(pp.File,'M','v');
         debug('text',3,'Text',['Sampling values saved to file ''',pp.File,'''.']);
     catch err
         warning(['Could not save to file ''',pp.File,''', the following error occured: ',err.message]);
-    end    
+    end
+end
+
 end
 
